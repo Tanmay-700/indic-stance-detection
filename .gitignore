@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# PyTorch / checkpoints / large model weights
+*.pt
+*.bin
+models/transformer_stance/
+muril_checkpoints/
+
+# System / OS
+.DS_Store
+Thumbs.db
