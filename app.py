@@ -141,4 +141,4 @@ with gr.Blocks(title="Indic Stance Detection - Global Warming") as demo:
 
 if __name__ == "__main__":
     print("\nStarting Web UI Frontend on http://127.0.0.1:7860 ...")
-    demo.launch(server_name="127.0.0.1", server_port=7860, inbrowser=True)
+    demo.launch(server_name="127.0.0.1", server_port=7860, inbrowser=False)
