@@ -729,18 +729,18 @@ def apply_native_elongation(text, lang):
 def apply_social_noise(text, lang, subcategory):
     """
     Noise distribution:
-    - 30% Clean (Zero noise)
-    - 45% Light Noise (Single emoji or natural exclamation)
-    - 25% Heavy Noise (Expressive/sarcastic punctuation, emojis, rare <=5% elongation)
+    - 35% Clean (Zero noise)
+    - 50% Light Noise (Single emoji or natural exclamation)
+    - 15% Heavy Noise (Expressive/sarcastic punctuation, emojis, rare <=5% elongation)
     """
     r = random.random()
     
-    # 1. 30% CLEAN (Zero emojis, clean punctuation)
-    if r < 0.30:
+    # 1. 35% CLEAN (Zero emojis, clean punctuation)
+    if r < 0.35:
         return text.strip(), "Clean"
         
-    # 2. 45% LIGHT NOISE (Single natural emoji or simple punctuation)
-    elif r < 0.75:
+    # 2. 50% LIGHT NOISE (Single natural emoji or simple punctuation)
+    elif r < 0.85:
         if "Favour" in subcategory:
             emoji = random.choice(["🌱", "🙏", "⚠️", "🌍", "!"])
         elif "Against" in subcategory:
@@ -751,10 +751,10 @@ def apply_social_noise(text, lang, subcategory):
         noise_text = f"{text.rstrip('।!')} {emoji}".strip()
         return noise_text, "Light"
         
-    # 3. 25% HEAVY NOISE (Expressive punctuation & contextual emojis)
+    # 3. 15% HEAVY NOISE (Expressive punctuation & contextual emojis)
     else:
-        # Rare elongation: only 20% of heavy noise rows (= 5% overall dataset)
-        if random.random() < 0.20:
+        # Rare elongation: only 25% of heavy noise rows (= ~3.75% overall dataset)
+        if random.random() < 0.25:
             text = apply_native_elongation(text, lang)
             
         if "Sarcastic" in subcategory:
