@@ -81,6 +81,18 @@ PUNC_REPEAT_DANDA = re.compile(r"[।]{2,}")
 PUNC_REPEAT_DOTS = re.compile(r"\.{3,}")
 PUNC_MIXED_EXCLAM_QUEST = re.compile(r"!\?+|\?!+")
 
+# Invisible control and zero-width characters (excluding ZWJ \u200D and ZWNJ \u200C which belong to Indic conjuncts and emojis)
+INVISIBLE_CHARS_PATTERN = re.compile(r"[\u200b\u200e\u200f\ufeff\u00a0]")
+
+# Mobile keyboard ASCII Pipe to Indic Danda
+KEYBOARD_PIPE_PATTERN = re.compile(r"\s*\|\s*")
+
+# Typography normalization map (smart quotes to standard, em/en dashes to hyphen)
+TYPOGRAPHY_MAP = {
+    "“": '"', "”": '"', "‘": "'", "’": "'",
+    "—": " - ", "–": " - "
+}
+
 # Indic Word + Emoji Tokenizer Pattern
 # Captures Devanagari words, Bengali words, Latin words, digits, full emoji sequences, and punctuation
 INDIC_TOKEN_PATTERN = re.compile(
@@ -178,11 +190,16 @@ def clean_indic_text(text: str, preserve_emojis: bool = True) -> str:
     """
     Master preprocessing pipeline for Indic text:
     1. Unicode NFC normalization
-    2. Social artifact cleaning (URLs, mentions, HTML)
-    3. Character de-elongation (max 2 repeated chars)
-    4. Emoji spacing and squashing (or removal if preserve_emojis=False)
-    5. Punctuation normalization
-    6. Whitespace cleanup
+    2. Invisible zero-width character sanitization (\u200B, \u00A0, \uFEFF)
+    3. Typography standardization (curly quotes -> straight, em-dashes -> hyphen)
+    4. Mobile keyboard pipe normalization (| -> Indic Danda ।)
+    5. Social artifact cleaning (URLs, mentions, HTML)
+    6. Character de-elongation (max 2 repeated chars, protecting double consonants)
+    7. Emoji spacing and squashing (preserving full grapheme clusters)
+    8. Punctuation normalization
+    9. Safe Latin lowercasing (unifies acronyms like IPCC/CO2; leaves Indic untouched)
+    10. Linguistic integrity: Chandrabindu (ँ, ঁ) is strictly preserved (distinct from Anusvara)
+    11. Whitespace cleanup
     """
     if not isinstance(text, str):
         return ""
@@ -190,22 +207,35 @@ def clean_indic_text(text: str, preserve_emojis: bool = True) -> str:
     # 1. Unicode NFC normalization
     cleaned = normalize_unicode(text)
     
-    # 2. Social artifact cleaning
+    # 2. Invisible character sanitization
+    cleaned = INVISIBLE_CHARS_PATTERN.sub(" ", cleaned)
+    
+    # 3. Typography standardization
+    for orig, repl in TYPOGRAPHY_MAP.items():
+        cleaned = cleaned.replace(orig, repl)
+        
+    # 4. Keyboard pipe normalization (| -> Indic Danda ।)
+    cleaned = KEYBOARD_PIPE_PATTERN.sub(" । ", cleaned)
+    
+    # 5. Social artifact cleaning
     cleaned = clean_social_artifacts(cleaned)
     
-    # 3. De-elongation
+    # 6. De-elongation
     cleaned = squash_character_elongation(cleaned)
     
-    # 4. Emoji handling
+    # 7. Emoji handling
     if preserve_emojis:
         cleaned = normalize_emojis(cleaned)
     else:
         cleaned = EMOJI_SEQUENCE.sub(" ", cleaned)
         
-    # 5. Punctuation normalization
+    # 8. Punctuation normalization
     cleaned = normalize_punctuation(cleaned)
     
-    # 6. Whitespace cleanup
+    # 9. Safe Latin lowercasing (applies only to Latin letters a-z; Indic scripts have no cases)
+    cleaned = cleaned.lower()
+    
+    # 10. Whitespace cleanup
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
     
     return cleaned
