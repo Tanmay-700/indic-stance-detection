@@ -1,0 +1,458 @@
+{
+  "ComplementNB": {
+    "validation": {
+      "accuracy": 0.9969,
+      "macro_f1": 0.9967
+    },
+    "test": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "macro_precision": 1.0,
+      "macro_recall": 1.0,
+      "per_class_f1": {
+        "AGAINST": 1.0,
+        "FAVOUR": 1.0,
+        "NONE": 1.0
+      }
+    },
+    "language_breakdown": {
+      "Hindi": {
+        "samples": 160,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class_f1": {
+          "AGAINST": 1.0,
+          "FAVOUR": 1.0,
+          "NONE": 1.0
+        }
+      },
+      "Bengali": {
+        "samples": 160,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class_f1": {
+          "AGAINST": 1.0,
+          "FAVOUR": 1.0,
+          "NONE": 1.0
+        }
+      }
+    },
+    "sarcasm_stress_test": {
+      "count": 49,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "per_class_f1": {
+        "AGAINST": 1.0,
+        "FAVOUR": 1.0,
+        "NONE": 0.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        96,
+        0,
+        0
+      ],
+      [
+        0,
+        106,
+        0
+      ],
+      [
+        0,
+        0,
+        118
+      ]
+    ],
+    "cm_figure_path": "d:/nlp/report\\figures\\cm_complementnb.png"
+  },
+  "LogisticRegression": {
+    "validation": {
+      "accuracy": 0.9969,
+      "macro_f1": 0.9967
+    },
+    "test": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "macro_precision": 1.0,
+      "macro_recall": 1.0,
+      "per_class_f1": {
+        "AGAINST": 1.0,
+        "FAVOUR": 1.0,
+        "NONE": 1.0
+      }
+    },
+    "language_breakdown": {
+      "Hindi": {
+        "samples": 160,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class_f1": {
+          "AGAINST": 1.0,
+          "FAVOUR": 1.0,
+          "NONE": 1.0
+        }
+      },
+      "Bengali": {
+        "samples": 160,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class_f1": {
+          "AGAINST": 1.0,
+          "FAVOUR": 1.0,
+          "NONE": 1.0
+        }
+      }
+    },
+    "sarcasm_stress_test": {
+      "count": 49,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "per_class_f1": {
+        "AGAINST": 1.0,
+        "FAVOUR": 1.0,
+        "NONE": 0.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        96,
+        0,
+        0
+      ],
+      [
+        0,
+        106,
+        0
+      ],
+      [
+        0,
+        0,
+        118
+      ]
+    ],
+    "cm_figure_path": "d:/nlp/report\\figures\\cm_logisticregression.png"
+  },
+  "LinearSVC": {
+    "validation": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "test": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "macro_precision": 1.0,
+      "macro_recall": 1.0,
+      "per_class_f1": {
+        "AGAINST": 1.0,
+        "FAVOUR": 1.0,
+        "NONE": 1.0
+      }
+    },
+    "language_breakdown": {
+      "Hindi": {
+        "samples": 160,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class_f1": {
+          "AGAINST": 1.0,
+          "FAVOUR": 1.0,
+          "NONE": 1.0
+        }
+      },
+      "Bengali": {
+        "samples": 160,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class_f1": {
+          "AGAINST": 1.0,
+          "FAVOUR": 1.0,
+          "NONE": 1.0
+        }
+      }
+    },
+    "sarcasm_stress_test": {
+      "count": 49,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "per_class_f1": {
+        "AGAINST": 1.0,
+        "FAVOUR": 1.0,
+        "NONE": 0.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        96,
+        0,
+        0
+      ],
+      [
+        0,
+        106,
+        0
+      ],
+      [
+        0,
+        0,
+        118
+      ]
+    ],
+    "cm_figure_path": "d:/nlp/report\\figures\\cm_linearsvc.png"
+  },
+  "RandomForest": {
+    "validation": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "test": {
+      "accuracy": 0.9906,
+      "macro_f1": 0.9904,
+      "macro_precision": 0.99,
+      "macro_recall": 0.9909,
+      "per_class_f1": {
+        "AGAINST": 0.9897,
+        "FAVOUR": 0.9858,
+        "NONE": 0.9957
+      }
+    },
+    "language_breakdown": {
+      "Hindi": {
+        "samples": 160,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class_f1": {
+          "AGAINST": 1.0,
+          "FAVOUR": 1.0,
+          "NONE": 1.0
+        }
+      },
+      "Bengali": {
+        "samples": 160,
+        "accuracy": 0.9812,
+        "macro_f1": 0.9808,
+        "per_class_f1": {
+          "AGAINST": 0.9796,
+          "FAVOUR": 0.9714,
+          "NONE": 0.9915
+        }
+      }
+    },
+    "sarcasm_stress_test": {
+      "count": 49,
+      "accuracy": 0.9592,
+      "macro_f1": 0.955,
+      "per_class_f1": {
+        "AGAINST": 0.9688,
+        "FAVOUR": 0.9412,
+        "NONE": 0.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        96,
+        0,
+        0
+      ],
+      [
+        2,
+        104,
+        0
+      ],
+      [
+        0,
+        1,
+        117
+      ]
+    ],
+    "cm_figure_path": "d:/nlp/report\\figures\\cm_randomforest.png"
+  },
+  "logistic_regression_top_features": {
+    "AGAINST": [
+      [
+        "word__🙄",
+        1.4257
+      ],
+      [
+        "word__क्लाइमेट",
+        0.7768
+      ],
+      [
+        "word__का",
+        0.749
+      ],
+      [
+        "word__মানুষের",
+        0.7244
+      ],
+      [
+        "word__!",
+        0.7232
+      ],
+      [
+        "char__ 🙄",
+        0.661
+      ],
+      [
+        "word__यह सब",
+        0.6527
+      ],
+      [
+        "char__ান",
+        0.6399
+      ],
+      [
+        "word__নাটক",
+        0.604
+      ],
+      [
+        "word__চক্রান্ত",
+        0.5819
+      ],
+      [
+        "word__কোটি",
+        0.5773
+      ],
+      [
+        "word__ফান্ড",
+        0.5739
+      ],
+      [
+        "word__विदेशी",
+        0.5509
+      ],
+      [
+        "word__सब",
+        0.5494
+      ],
+      [
+        "word__বন্ধ",
+        0.546
+      ]
+    ],
+    "FAVOUR": [
+      [
+        "word__🌍",
+        1.3663
+      ],
+      [
+        "word__⚠️",
+        1.2093
+      ],
+      [
+        "word__🌱",
+        1.1315
+      ],
+      [
+        "word__হয়ে",
+        0.9445
+      ],
+      [
+        "word__!",
+        0.6591
+      ],
+      [
+        "word__हो",
+        0.6385
+      ],
+      [
+        "char__ 🌍",
+        0.634
+      ],
+      [
+        "word__যাচ্ছে",
+        0.6264
+      ],
+      [
+        "word__रहा",
+        0.5719
+      ],
+      [
+        "word__हैं",
+        0.5643
+      ],
+      [
+        "word__গাছ",
+        0.5641
+      ],
+      [
+        "word__এখনই",
+        0.542
+      ],
+      [
+        "word__আর",
+        0.5393
+      ],
+      [
+        "word__गंभीर",
+        0.5375
+      ],
+      [
+        "word__पेड़",
+        0.5277
+      ]
+    ],
+    "NONE": [
+      [
+        "word__?",
+        2.3262
+      ],
+      [
+        "word__👍",
+        1.1535
+      ],
+      [
+        "word__👏",
+        0.9314
+      ],
+      [
+        "word__बहुत",
+        0.7519
+      ],
+      [
+        "word__वीडियो",
+        0.7313
+      ],
+      [
+        "word__করুন",
+        0.7187
+      ],
+      [
+        "word__क्या",
+        0.7069
+      ],
+      [
+        "word__चैनल",
+        0.6855
+      ],
+      [
+        "word__আপনার",
+        0.6705
+      ],
+      [
+        "word__आप",
+        0.6625
+      ],
+      [
+        "word__ও",
+        0.6533
+      ],
+      [
+        "word__❤️",
+        0.6241
+      ],
+      [
+        "word__करें",
+        0.6111
+      ],
+      [
+        "char__? ",
+        0.6105
+      ],
+      [
+        "word__কি",
+        0.6016
+      ]
+    ]
+  }
+}
