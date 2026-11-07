@@ -1,98 +1,325 @@
 """
-Text Preprocessing Module for Indic Languages (Hindi & Bengali)
-Includes Unicode normalization, noise removal, Indic stopword handling, and tokenization.
+Indic Stance Detection - Preprocessing & Normalization Pipeline
+Step 3 in the NLP Project Pipeline
+
+Designed for Hindi (Devanagari) & Bengali (Bangla) social media texts.
+Target: "Climate change and global warming is a serious concern."
+
+Key Principles:
+1. Unicode NFC Normalization: Canonical representation of Indic characters & conjuncts.
+2. Noise Cleaning: Strips URLs, user mentions, HTML artifacts; preserves hashtags as text.
+3. Emoji Preservation & Normalization:
+   - Preserves emojis as high-signal stance tokens (🌱, 🌍, 🙄, 😂, 🤡).
+   - Emoji Spacing: Guarantees whitespace separation so emojis are not glued to Indic words.
+   - Emoji Squashing: Collapses 3+ identical emojis to max 2 to prevent feature explosion.
+4. Character De-elongation: Collapses 3+ repeated characters down to 2 ("नहींइइइइ" -> "नहींइइ").
+   Preserves valid Indic double consonants (e.g. "पक्का", "দিল্লি") untouched.
+5. Punctuation Normalization: Collapses excessive repeated punctuation ("!!!!????" -> "!?").
+6. Indic Tokenizer: Extracts Indic words, emojis, numbers, and key punctuation.
 """
 
+import sys
 import os
 import re
+import html
 import unicodedata
 import pandas as pd
 
-# Hindi Stopwords
-HINDI_STOPWORDS = set([
-    "के", "का", "एक", "की", "है", "यह", "और", "से", "हैं", "को", "पर", "इस", "होता",
-    "कि", "जो", "कर", "मे", "गया", "करने", "किया", "लिये", "अपने", "ने", "बनी", "नहीं",
-    "तो", "ही", "या", "हो", "था", "थे", "थी", "हुआ", "हुए", "हुई", "जब", "तब", "अब",
-    "तक", "साथ", "सब", "कुछ", "भी", "दो", "गए", "गई", "वाले", "रहा", "रहे", "रही"
-])
+# Fix Windows console UTF-8 output encoding
+if sys.stdout.encoding != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
-# Bengali Stopwords
-BENGALI_STOPWORDS = set([
-    "এই", "একটি", "এবং", "ও", "এর", "কে", "যে", "হয়", "হয়নি", "থেকে", "করতে",
-    "করে", "করা", "হয়েছে", "আছে", "ছিল", "থাকবে", "বা", "না", "নয়", "তাহলে", "যদি",
-    "তবে", "সব", "কিছু", "অনেক", "পর", "আগে", "সাথে", "দ্বারা", "উপর", "নিচে",
-    "মধ্যে", "তিনি", "তারা", "আমরা", "তোমরা", "আমি", "তুমি", "সে", "কী", "কেন"
-])
+# --------------------------------------------------------------------------
+# REGEX PATTERNS
+# --------------------------------------------------------------------------
 
-class IndicPreprocessor:
-    def __init__(self, remove_stopwords=False):
-        self.remove_stopwords = remove_stopwords
+# URLs & Social Handles
+URL_PATTERN = re.compile(r"https?://\S+|www\.\S+", re.IGNORECASE)
+MENTION_PATTERN = re.compile(r"@\w+", re.UNICODE)
+HASHTAG_PATTERN = re.compile(r"#([\w\u0900-\u097F\u0980-\u09FF]+)", re.UNICODE)
+HTML_TAG_PATTERN = re.compile(r"<[^>]+>")
 
-    def normalize_unicode(self, text: str) -> str:
-        """Applies Unicode NFC normalization."""
-        if not isinstance(text, str):
-            return ""
-        return unicodedata.normalize("NFC", text)
+# Comprehensive Emoji Regex covering Emoticons, Pictographs, Symbols, Dingbats
+EMOJI_PATTERN = re.compile(
+    r"("
+    r"[\U0001F1E6-\U0001F1FF]"      # Regional indicator symbols (flags)
+    r"|[\U0001F300-\U0001F5FF]"     # Miscellaneous Symbols and Pictographs
+    r"|[\U0001F600-\U0001F64F]"     # Emoticons (smileys, eye-rolls, clowns)
+    r"|[\U0001F680-\U0001F6FF]"     # Transport and Map Symbols
+    r"|[\U0001F700-\U0001F77F]"     # Alchemical Symbols
+    r"|[\U0001F780-\U0001F7FF]"     # Geometric Shapes Extended
+    r"|[\U0001F800-\U0001F8FF]"     # Supplemental Arrows-C
+    r"|[\U0001F900-\U0001F9FF]"     # Supplemental Symbols and Pictographs (facepalms, skulls, etc.)
+    r"|[\U0001FA00-\U0001FA6F]"     # Chess Symbols
+    r"|[\U0001FA70-\U0001FAFF]"     # Symbols and Pictographs Extended-A
+    r"|[\u2600-\u26FF]"             # Miscellaneous Symbols (e.g. ☀️, ⚠️)
+    r"|[\u2700-\u27BF]"             # Dingbats (e.g. ❄️, ✈️)
+    r"|[\u2300-\u23FF]"             # Miscellaneous Technical
+    r"|[\u2B50]"                    # Star
+    r")",
+    re.UNICODE
+)
 
-    def clean_social_text(self, text: str) -> str:
-        """Removes URLs, mentions, repeated punctuation, and extra whitespace."""
-        text = self.normalize_unicode(text)
-        
-        # Remove URLs
-        text = re.sub(r"http\S+|www\S+|https\S+", "", text, flags=re.MULTILINE)
-        
-        # Remove user mentions (@username)
-        text = re.sub(r"@\w+", "", text)
-        
-        # Remove hashtags symbol (#word -> word)
-        text = re.sub(r"#", "", text)
-        
-        # Clean repetitive punctuation (e.g., "!!!!" -> "!")
-        text = re.sub(r"([!?.।])\1+", r"\1", text)
-        
-        # Keep Indic characters (Devanagari, Bengali), Latin, numbers, and basic punctuation
-        # Devanagari: \u0900-\u097F, Bengali: \u0980-\u09FF
-        text = re.sub(r"[^\u0900-\u097F\u0980-\u09FFa-zA-Z0-9\s!?.,।]", " ", text)
-        
-        # Normalize whitespace
-        text = re.sub(r"\s+", " ", text).strip()
-        return text
+# Character elongation pattern (excludes emoji range)
+# Collapses 3+ identical non-emoji characters to 2
+ELONGATION_PATTERN = re.compile(
+    r"([^\U00010000-\U0010ffff\u2600-\u27bf\s])\1{2,}",
+    re.UNICODE
+)
 
-    def tokenize(self, text: str) -> list:
-        """Tokenize Indic text by whitespace and punctuation boundaries."""
-        cleaned = self.clean_social_text(text)
-        tokens = cleaned.split()
-        return tokens
+# Punctuation normalization patterns
+PUNC_REPEAT_EXCLAM = re.compile(r"!{2,}")
+PUNC_REPEAT_QUESTION = re.compile(r"\?{2,}")
+PUNC_REPEAT_DANDA = re.compile(r"[।]{2,}")
+PUNC_REPEAT_DOTS = re.compile(r"\.{3,}")
+PUNC_MIXED_EXCLAM_QUEST = re.compile(r"!\?+|\?!+")
 
-    def preprocess(self, text: str, language: str = "Hindi") -> str:
-        """Full pipeline: cleans, tokenizes, optionally filters stopwords."""
-        tokens = self.tokenize(text)
-        
-        if self.remove_stopwords:
-            stopwords = HINDI_STOPWORDS if language == "Hindi" else BENGALI_STOPWORDS
-            tokens = [t for t in tokens if t not in stopwords]
-            
-        return " ".join(tokens)
+# Indic Word + Emoji Tokenizer Pattern
+# Captures Devanagari words, Bengali words, Latin words, digits, single emojis, and punctuation
+INDIC_TOKEN_PATTERN = re.compile(
+    r"[\u0900-\u097F]+"               # Hindi / Devanagari words
+    r"|[\u0980-\u09FF]+"              # Bengali words
+    r"|[a-zA-Z]+"                     # English / Latin words
+    r"|\d+"                           # Numbers
+    r"|[\U00010000-\U0010ffff\u2600-\u27bf]" # Emojis (single token each)
+    r"|[!?।,;:\"'()\-]+",             # Punctuation tokens
+    re.UNICODE
+)
 
-def preprocess_splits(input_dir="d:/nlp/data", output_dir="d:/nlp/data/processed"):
-    os.makedirs(output_dir, exist_ok=True)
-    preprocessor = IndicPreprocessor(remove_stopwords=False)
+
+# --------------------------------------------------------------------------
+# PIPELINE FUNCTIONS
+# --------------------------------------------------------------------------
+
+def normalize_unicode(text: str) -> str:
+    """Canonical Unicode NFC normalization for Indic scripts."""
+    if not isinstance(text, str):
+        return ""
+    return unicodedata.normalize("NFC", text)
+
+
+def clean_social_artifacts(text: str) -> str:
+    """Removes URLs, mentions, HTML tags, and cleans hashtags into plain text."""
+    # Decode HTML entities (&amp; -> &, &lt; -> <, etc.)
+    text = html.unescape(text)
+    # Strip HTML tags if any
+    text = HTML_TAG_PATTERN.sub(" ", text)
+    # Strip URLs
+    text = URL_PATTERN.sub(" ", text)
+    # Strip @mentions
+    text = MENTION_PATTERN.sub(" ", text)
+    # Keep hashtag body as text (e.g. #ग्लोबलवार्मिंग -> ग्लोबलवार्मिंग)
+    text = HASHTAG_PATTERN.sub(r" \1 ", text)
+    return text
+
+
+def squash_character_elongation(text: str) -> str:
+    """
+    Collapses 3 or more consecutive identical characters down to 2.
+    Example: 'नहींइइइइ' -> 'नहींइइ', 'সত্যিইইই' -> 'সত্যিইই'.
+    Preserves valid Indic double consonants like 'पक्का' or 'দিল্লি'.
+    """
+    return ELONGATION_PATTERN.sub(r"\1\1", text)
+
+
+def normalize_emojis(text: str) -> str:
+    """
+    1. Spacing: Ensures whitespace around emojis so tokenizers treat them independently.
+    2. Squashing: Collapses runs of 3+ identical emojis down to 2 (e.g. '😂😂😂😂' -> '😂 😂').
+    """
+    # Step A: Ensure space around all emojis
+    text = EMOJI_PATTERN.sub(r" \1 ", text)
     
-    for split in ["train.csv", "val.csv", "test.csv"]:
-        path = os.path.join(input_dir, split)
-        if not os.path.exists(path):
+    # Step B: Squash 3+ consecutive identical emojis to 2
+    # Find repeated emoji tokens separated by whitespace
+    def squash_match(match):
+        emoji_char = match.group(1)
+        return f" {emoji_char} {emoji_char} "
+    
+    # Match an emoji followed by 2 or more of the same emoji (with optional whitespace)
+    squashed = re.sub(
+        r"([\U00010000-\U0010ffff\u2600-\u27bf])(?:\s*\1){2,}",
+        squash_match,
+        text
+    )
+    return squashed
+
+
+def normalize_punctuation(text: str) -> str:
+    """
+    Normalizes excessive punctuation without losing emotive intent.
+    - Multiple ! -> !!
+    - Multiple ? -> ??
+    - Multiple । (Danda) -> ।।
+    - Multiple . -> ...
+    - Mixed !? / ?! -> !?
+    """
+    text = PUNC_REPEAT_EXCLAM.sub("!!", text)
+    text = PUNC_REPEAT_QUESTION.sub("??", text)
+    text = PUNC_REPEAT_DANDA.sub("।।", text)
+    text = PUNC_REPEAT_DOTS.sub("...", text)
+    text = PUNC_MIXED_EXCLAM_QUEST.sub("!?", text)
+    return text
+
+
+def clean_indic_text(text: str, preserve_emojis: bool = True) -> str:
+    """
+    Master preprocessing pipeline for Indic text:
+    1. Unicode NFC normalization
+    2. Social artifact cleaning (URLs, mentions, HTML)
+    3. Character de-elongation (max 2 repeated chars)
+    4. Emoji spacing and squashing (or removal if preserve_emojis=False)
+    5. Punctuation normalization
+    6. Whitespace cleanup
+    """
+    if not isinstance(text, str):
+        return ""
+    
+    # 1. Unicode NFC normalization
+    cleaned = normalize_unicode(text)
+    
+    # 2. Social artifact cleaning
+    cleaned = clean_social_artifacts(cleaned)
+    
+    # 3. De-elongation
+    cleaned = squash_character_elongation(cleaned)
+    
+    # 4. Emoji handling
+    if preserve_emojis:
+        cleaned = normalize_emojis(cleaned)
+    else:
+        cleaned = EMOJI_PATTERN.sub(" ", cleaned)
+        
+    # 5. Punctuation normalization
+    cleaned = normalize_punctuation(cleaned)
+    
+    # 6. Whitespace cleanup
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    
+    return cleaned
+
+
+def indic_tokenize(text: str) -> list[str]:
+    """
+    Tokenizer tailored for Indic languages + emojis + punctuation.
+    Splits text into individual words, emojis, numbers, and punctuation marks.
+    """
+    if not isinstance(text, str) or not text.strip():
+        return []
+    return INDIC_TOKEN_PATTERN.findall(text)
+
+
+# --------------------------------------------------------------------------
+# DATASET BATCH PROCESSOR
+# --------------------------------------------------------------------------
+
+def process_and_save_datasets(data_dir: str = "d:/nlp/data", processed_dir: str = "d:/nlp/data/processed"):
+    """
+    Applies the preprocessing pipeline to all project datasets:
+    - train.csv
+    - val.csv
+    - test.csv
+    - hidden_test_unlabeled.csv
+    - raw/indic_stance_corpus_3200.csv
+    
+    Outputs cleaned files with 'cleaned_text' column to data/processed/.
+    """
+    os.makedirs(processed_dir, exist_ok=True)
+    
+    tasks = [
+        ("train.csv", True),
+        ("val.csv", True),
+        ("test.csv", True),
+        ("hidden_test_unlabeled.csv", False),
+    ]
+    
+    print("=" * 75)
+    print("INDIC STANCE DETECTION - PREPROCESSING PIPELINE EXECUTION")
+    print("=" * 75)
+    
+    stats_summary = []
+    
+    for filename, is_labeled in tasks:
+        in_path = os.path.join(data_dir, filename)
+        out_path = os.path.join(processed_dir, filename)
+        
+        if not os.path.exists(in_path):
+            print(f"[WARNING] File not found: {in_path}")
             continue
             
-        # keep_default_na=False prevents 'None' from being parsed as NaN
-        df = pd.read_csv(path, keep_default_na=False)
-        print(f"Preprocessing {split} ({len(df)} samples)...")
-        df["cleaned_text"] = df.apply(
-            lambda row: preprocessor.preprocess(row["text"], row["language"]), axis=1
-        )
+        df = pd.read_csv(in_path, keep_default_na=False)
+        print(f"\nProcessing {filename} ({len(df)} rows)...")
         
-        out_path = os.path.join(output_dir, split)
+        # Apply preprocessing
+        df["cleaned_text"] = df["text"].apply(clean_indic_text)
+        
+        # Calculate statistics
+        orig_char_count = df["text"].str.len().sum()
+        clean_char_count = df["cleaned_text"].str.len().sum()
+        
+        # Token count
+        all_tokens = [tok for t in df["cleaned_text"] for tok in indic_tokenize(t)]
+        vocab = set(all_tokens)
+        emoji_tokens = [tok for tok in all_tokens if EMOJI_PATTERN.search(tok)]
+        
+        # Reorder columns: id, text, cleaned_text, language, [stance]
+        if is_labeled:
+            cols = ["id", "text", "cleaned_text", "language", "stance"]
+        else:
+            cols = ["id", "text", "cleaned_text", "language"]
+            
+        df = df[cols]
         df.to_csv(out_path, index=False, encoding="utf-8-sig")
-        print(f"Saved preprocessed data to {out_path}")
+        
+        stats_summary.append({
+            "File": filename,
+            "Rows": len(df),
+            "Total Tokens": len(all_tokens),
+            "Unique Vocab": len(vocab),
+            "Emoji Tokens": len(emoji_tokens),
+            "Unique Emojis": len(set(emoji_tokens)),
+            "Char Delta": f"{clean_char_count - orig_char_count:+d}"
+        })
+        print(f"  -> Saved to {out_path}")
+        print(f"  -> Total Tokens: {len(all_tokens):,d} | Unique Vocab: {len(vocab):,d} | Emoji Tokens: {len(emoji_tokens):,d}")
+
+    # Also process raw 3200 corpus for full analysis & research report
+    raw_in = os.path.join(data_dir, "raw", "indic_stance_corpus_3200.csv")
+    if os.path.exists(raw_in):
+        df_raw = pd.read_csv(raw_in, keep_default_na=False)
+        df_raw["cleaned_text"] = df_raw["text"].apply(clean_indic_text)
+        raw_out = os.path.join(processed_dir, "indic_stance_corpus_3200_cleaned.csv")
+        df_raw.to_csv(raw_out, index=False, encoding="utf-8-sig")
+        print(f"\nSaved full processed corpus to {raw_out} ({len(df_raw)} rows)")
+
+    # Print summary table
+    print("\n" + "=" * 75)
+    print("PREPROCESSING SUMMARY TABLE")
+    print("=" * 75)
+    summary_df = pd.DataFrame(stats_summary)
+    print(summary_df.to_string(index=False))
+
+    # Demonstrate sample transformations
+    print("\n" + "=" * 75)
+    print("SAMPLE TRANSFORMATIONS (RAW -> CLEANED)")
+    print("=" * 75)
+    
+    sample_df = pd.read_csv(os.path.join(processed_dir, "train.csv"), keep_default_na=False)
+    # Pick a few diverse samples (showing emojis, sarcastic punctuation, elongation)
+    demo_indices = [0, 42, 105, 520, 890]
+    for idx in demo_indices:
+        if idx < len(sample_df):
+            row = sample_df.iloc[idx]
+            print(f"[{row['language']} - {row['stance']}]")
+            print(f"  RAW:     {row['text']}")
+            print(f"  CLEANED: {row['cleaned_text']}")
+            tokens = indic_tokenize(row["cleaned_text"])
+            print(f"  TOKENS:  {tokens[:8]}..." if len(tokens) > 8 else f"  TOKENS:  {tokens}")
+            print("-" * 75)
+
 
 if __name__ == "__main__":
-    preprocess_splits()
+    process_and_save_datasets()
