@@ -263,6 +263,10 @@ def main():
         # Train
         clf.fit(X_train, y_train)
         
+        # Save individual model checkpoint for frontend exploration
+        clf_path = os.path.join(MODELS_DIR, f"model_{name.lower()}.pkl")
+        joblib.dump(clf, clf_path)
+        
         # Validation predictions
         val_preds = clf.predict(X_val)
         val_acc = accuracy_score(y_val, val_preds)
