@@ -3,17 +3,18 @@ Indic Stance Detection - Preprocessing & Normalization Pipeline
 Step 3 in the NLP Project Pipeline
 
 Designed for Hindi (Devanagari) & Bengali (Bangla) social media texts.
-Target: "Climate change and global warming is a serious concern."
+Target Claim: "Climate change and global warming is a serious concern."
 
-Key Principles:
+Pipeline Steps:
 1. Unicode NFC Normalization: Canonical representation of Indic characters & conjuncts.
-2. Noise Cleaning: Strips URLs, user mentions, HTML artifacts; preserves hashtags as text.
-3. Emoji Preservation & Normalization:
-   - Preserves emojis as high-signal stance tokens (🌱, 🌍, 🙄, 😂, 🤡).
+2. Social Artifact Cleaning: Strips URLs, mentions, HTML tags; preserves hashtags as text.
+3. Character De-elongation: Collapses 3+ repeated characters down to 2 ("नहींइइइइ" -> "नहींइइ").
+   Preserves valid Indic double consonants (e.g. "पक्का", "দিল্লি") untouched.
+4. Emoji Preservation & Normalization:
+   - Preserves emojis as high-signal stance tokens (🌱, 🌍, 🙄, 😂, 🤡, ❤️, 🤦‍♂️).
    - Emoji Spacing: Guarantees whitespace separation so emojis are not glued to Indic words.
    - Emoji Squashing: Collapses 3+ identical emojis to max 2 to prevent feature explosion.
-4. Character De-elongation: Collapses 3+ repeated characters down to 2 ("नहींइइइइ" -> "नहींइइ").
-   Preserves valid Indic double consonants (e.g. "पक्का", "দিল্লি") untouched.
+   - Full grapheme cluster support (handles variation selectors \uFE0F and ZWJ sequences).
 5. Punctuation Normalization: Collapses excessive repeated punctuation ("!!!!????" -> "!?").
 6. Indic Tokenizer: Extracts Indic words, emojis, numbers, and key punctuation.
 """
@@ -42,31 +43,34 @@ MENTION_PATTERN = re.compile(r"@\w+", re.UNICODE)
 HASHTAG_PATTERN = re.compile(r"#([\w\u0900-\u097F\u0980-\u09FF]+)", re.UNICODE)
 HTML_TAG_PATTERN = re.compile(r"<[^>]+>")
 
-# Comprehensive Emoji Regex covering Emoticons, Pictographs, Symbols, Dingbats
-EMOJI_PATTERN = re.compile(
-    r"("
-    r"[\U0001F1E6-\U0001F1FF]"      # Regional indicator symbols (flags)
-    r"|[\U0001F300-\U0001F5FF]"     # Miscellaneous Symbols and Pictographs
-    r"|[\U0001F600-\U0001F64F]"     # Emoticons (smileys, eye-rolls, clowns)
-    r"|[\U0001F680-\U0001F6FF]"     # Transport and Map Symbols
-    r"|[\U0001F700-\U0001F77F]"     # Alchemical Symbols
+# Base Emoji Characters
+EMOJI_BASE = (
+    r"[\U0001F1E6-\U0001F1FF]"      # Flags
+    r"|[\U0001F300-\U0001F5FF]"     # Symbols & pictographs
+    r"|[\U0001F600-\U0001F64F]"     # Emoticons (smileys, clowns, etc.)
+    r"|[\U0001F680-\U0001F6FF]"     # Transport & map
+    r"|[\U0001F700-\U0001F77F]"     # Alchemical symbols
     r"|[\U0001F780-\U0001F7FF]"     # Geometric Shapes Extended
     r"|[\U0001F800-\U0001F8FF]"     # Supplemental Arrows-C
-    r"|[\U0001F900-\U0001F9FF]"     # Supplemental Symbols and Pictographs (facepalms, skulls, etc.)
+    r"|[\U0001F900-\U0001F9FF]"     # Supplemental Symbols & Pictographs (facepalms, skulls)
     r"|[\U0001FA00-\U0001FA6F]"     # Chess Symbols
-    r"|[\U0001FA70-\U0001FAFF]"     # Symbols and Pictographs Extended-A
-    r"|[\u2600-\u26FF]"             # Miscellaneous Symbols (e.g. ☀️, ⚠️)
-    r"|[\u2700-\u27BF]"             # Dingbats (e.g. ❄️, ✈️)
-    r"|[\u2300-\u23FF]"             # Miscellaneous Technical
+    r"|[\U0001FA70-\U0001FAFF]"     # Symbols & Pictographs Extended-A
+    r"|[\u2600-\u26FF]"             # Misc symbols (e.g. ☀️, ⚠️)
+    r"|[\u2700-\u27BF]"             # Dingbats (e.g. ❄️, ✈️, ❤️)
+    r"|[\u2300-\u23FF]"             # Misc technical
     r"|[\u2B50]"                    # Star
-    r")",
+)
+
+# Comprehensive Emoji Sequence (handles Variation Selectors \uFE0E/\uFE0F, Skin tones, and ZWJ joins)
+EMOJI_SEQUENCE = re.compile(
+    rf"(?:(?:{EMOJI_BASE})[\uFE0E\uFE0F]?(?:[\U0001F3FB-\U0001F3FF])?(?:\u200D(?:(?:{EMOJI_BASE})[\uFE0E\uFE0F]?(?:[\U0001F3FB-\U0001F3FF])?))*)",
     re.UNICODE
 )
 
-# Character elongation pattern (excludes emoji range)
-# Collapses 3+ identical non-emoji characters to 2
+# Character elongation pattern specifically targeting Indic letters and Latin word characters:
+# Hindi: \u0900-\u097F, Bengali: \u0980-\u09FF, Latin: a-zA-Z
 ELONGATION_PATTERN = re.compile(
-    r"([^\U00010000-\U0010ffff\u2600-\u27bf\s])\1{2,}",
+    r"([\u0900-\u097F\u0980-\u09FFa-zA-Z])\1{2,}",
     re.UNICODE
 )
 
@@ -78,14 +82,14 @@ PUNC_REPEAT_DOTS = re.compile(r"\.{3,}")
 PUNC_MIXED_EXCLAM_QUEST = re.compile(r"!\?+|\?!+")
 
 # Indic Word + Emoji Tokenizer Pattern
-# Captures Devanagari words, Bengali words, Latin words, digits, single emojis, and punctuation
+# Captures Devanagari words, Bengali words, Latin words, digits, full emoji sequences, and punctuation
 INDIC_TOKEN_PATTERN = re.compile(
-    r"[\u0900-\u097F]+"               # Hindi / Devanagari words
-    r"|[\u0980-\u09FF]+"              # Bengali words
-    r"|[a-zA-Z]+"                     # English / Latin words
-    r"|\d+"                           # Numbers
-    r"|[\U00010000-\U0010ffff\u2600-\u27bf]" # Emojis (single token each)
-    r"|[!?।,;:\"'()\-]+",             # Punctuation tokens
+    rf"(?:(?:{EMOJI_BASE})[\uFE0E\uFE0F]?(?:[\U0001F3FB-\U0001F3FF])?(?:\u200D(?:(?:{EMOJI_BASE})[\uFE0E\uFE0F]?(?:[\U0001F3FB-\U0001F3FF])?))*)"
+    r"|[\u0900-\u097F]+"               # Hindi / Devanagari words
+    r"|[\u0980-\u09FF]+"               # Bengali words
+    r"|[a-zA-Z]+"                      # English / Latin words
+    r"|\d+"                            # Numbers
+    r"|[!?।,;:\"'()\-]+",              # Punctuation tokens
     re.UNICODE
 )
 
@@ -120,32 +124,37 @@ def squash_character_elongation(text: str) -> str:
     """
     Collapses 3 or more consecutive identical characters down to 2.
     Example: 'नहींइइइइ' -> 'नहींइइ', 'সত্যিইইই' -> 'সত্যিইই'.
-    Preserves valid Indic double consonants like 'पक्का' or 'দিল্লি'.
+    Preserves valid Indic double consonants like 'पक्का' or 'দিল্লি' untouched.
     """
     return ELONGATION_PATTERN.sub(r"\1\1", text)
 
 
 def normalize_emojis(text: str) -> str:
     """
-    1. Spacing: Ensures whitespace around emojis so tokenizers treat them independently.
+    1. Spacing: Ensures whitespace around emoji sequences so tokenizers treat them independently.
     2. Squashing: Collapses runs of 3+ identical emojis down to 2 (e.g. '😂😂😂😂' -> '😂 😂').
+       Maintains full emoji grapheme clusters (including variation selectors and ZWJ joins).
     """
-    # Step A: Ensure space around all emojis
-    text = EMOJI_PATTERN.sub(r" \1 ", text)
+    # Step A: Ensure space around all emoji sequences
+    spaced = EMOJI_SEQUENCE.sub(r" \g<0> ", text)
     
-    # Step B: Squash 3+ consecutive identical emojis to 2
-    # Find repeated emoji tokens separated by whitespace
-    def squash_match(match):
-        emoji_char = match.group(1)
-        return f" {emoji_char} {emoji_char} "
+    # Step B: Squash 3+ consecutive identical emojis down to 2
+    tokens = [tok.strip() for tok in spaced.split() if tok.strip()]
+    squashed_toks = []
+    prev_tok = None
+    rep_count = 0
     
-    # Match an emoji followed by 2 or more of the same emoji (with optional whitespace)
-    squashed = re.sub(
-        r"([\U00010000-\U0010ffff\u2600-\u27bf])(?:\s*\1){2,}",
-        squash_match,
-        text
-    )
-    return squashed
+    for tok in tokens:
+        if tok == prev_tok and EMOJI_SEQUENCE.fullmatch(tok):
+            rep_count += 1
+            if rep_count <= 2:
+                squashed_toks.append(tok)
+        else:
+            prev_tok = tok
+            rep_count = 1
+            squashed_toks.append(tok)
+            
+    return " ".join(squashed_toks)
 
 
 def normalize_punctuation(text: str) -> str:
@@ -191,7 +200,7 @@ def clean_indic_text(text: str, preserve_emojis: bool = True) -> str:
     if preserve_emojis:
         cleaned = normalize_emojis(cleaned)
     else:
-        cleaned = EMOJI_PATTERN.sub(" ", cleaned)
+        cleaned = EMOJI_SEQUENCE.sub(" ", cleaned)
         
     # 5. Punctuation normalization
     cleaned = normalize_punctuation(cleaned)
@@ -205,7 +214,7 @@ def clean_indic_text(text: str, preserve_emojis: bool = True) -> str:
 def indic_tokenize(text: str) -> list[str]:
     """
     Tokenizer tailored for Indic languages + emojis + punctuation.
-    Splits text into individual words, emojis, numbers, and punctuation marks.
+    Splits text into individual words, full emoji sequences, numbers, and punctuation marks.
     """
     if not isinstance(text, str) or not text.strip():
         return []
@@ -263,7 +272,7 @@ def process_and_save_datasets(data_dir: str = "d:/nlp/data", processed_dir: str 
         # Token count
         all_tokens = [tok for t in df["cleaned_text"] for tok in indic_tokenize(t)]
         vocab = set(all_tokens)
-        emoji_tokens = [tok for tok in all_tokens if EMOJI_PATTERN.search(tok)]
+        emoji_tokens = [tok for tok in all_tokens if EMOJI_SEQUENCE.fullmatch(tok)]
         
         # Reorder columns: id, text, cleaned_text, language, [stance]
         if is_labeled:
@@ -308,7 +317,7 @@ def process_and_save_datasets(data_dir: str = "d:/nlp/data", processed_dir: str 
     print("=" * 75)
     
     sample_df = pd.read_csv(os.path.join(processed_dir, "train.csv"), keep_default_na=False)
-    # Pick a few diverse samples (showing emojis, sarcastic punctuation, elongation)
+    # Pick diverse samples: sarcasm, emojis, weather, elongation
     demo_indices = [0, 42, 105, 520, 890]
     for idx in demo_indices:
         if idx < len(sample_df):
