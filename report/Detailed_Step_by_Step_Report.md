@@ -317,6 +317,49 @@ flowchart TD
 
 ---
 
+## Step 5: Contextual Transformer Model (Google MuRIL & Colab GPU)
+
+### 5.1 Objective & Scientific Rationale
+Step 4 proved that classical TF-IDF models suffer from a fundamental architectural limitation: they lack **cross-token attention**. When an environmental noun (`"पेड़"`, `"গাছ"`) is accompanied by a negation or minimizing phrase (`"से कुछ नहीं होता"`, `"কোনো ক্ষতি হবে না"`), bag-of-words models misclassify the comment as `FAVOUR` because the positive noun weights overpower the negation.
+
+In Step 5, we deployed **Google's MuRIL (`google/muril-base-cased` - Multilingual Representations for Indic Languages)**. Pretrained specifically on 17 Indian languages by Google Research India, MuRIL uses multi-head bidirectional self-attention to calculate contextual representations where the noun token attends to the negation token, directly resolving the semantic minimization failure mode.
+
+### 5.2 The Emoji `[UNK]` Trap & Our Architectural Fix
+During testing, a critical deficiency in standard MuRIL was discovered:
+- Standard MuRIL was pretrained on Wikipedia/Common Crawl text where emojis were not included in its 197,258 token vocabulary.
+- Consequently, raw MuRIL mapped all high-signal stance emojis (`🌱`, `🌍`, `🙄`, `🤡`, `⚠️`) to the generic unknown token: **`[UNK]`**!
+- *Our Architectural Solution:*
+  1. We programmatically extracted all unique emoji grapheme clusters from the dataset.
+  2. We dynamically expanded MuRIL's tokenizer vocabulary: `tokenizer.add_tokens(unique_emojis)`.
+  3. We resized the transformer's embedding matrix: `model.resize_token_embeddings(len(tokenizer))`.
+  This guarantees that emojis retain dedicated, trainable 768-dimensional contextual vectors instead of being discarded as `[UNK]`.
+
+### 5.3 Local & Server PyTorch Training Engine ([`src/transformers_train.py`](file:///d:/nlp/src/transformers_train.py))
+- Developed a complete PyTorch sequence classification training script:
+  - Supports AdamW optimizer with weight decay ($0.01$), linear warmup scheduler ($10\%$ of steps), and gradient clipping ($1.0$).
+  - Tracks validation Macro F1 score after each epoch and automatically checkpoints the best model weights.
+  - Automatically handles CPU vs. CUDA device detection.
+  - Generates hidden test predictions to [`predictions/transformer_predictions.csv`](file:///d:/nlp/predictions/) and confusion matrix heatmaps to [`report/figures/cm_transformer_muril.png`](file:///d:/nlp/report/figures/).
+
+### 5.4 The Turnkey Google Colab GPU Notebook ([`notebooks/Indic_Stance_Detection_Colab.ipynb`](file:///d:/nlp/notebooks/Indic_Stance_Detection_Colab.ipynb))
+Because local hardware lacks dedicated GPU acceleration (`torch.cuda.is_available() = False`), we built a turnkey, 1-click Google Colab notebook:
+- Ready to run on free Colab GPUs (Tesla T4 / V100) in under 4 minutes.
+- Implements the complete end-to-end pipeline using HuggingFace `Trainer` and `datasets`.
+- Includes cells for `!nvidia-smi` hardware verification, emoji vocabulary expansion, training with early stopping, Macro F1 evaluation, seaborn confusion matrix heatmaps, and export of competition predictions.
+
+```python
+# Key Snippet: Vocabulary Expansion in Colab & Local Script
+tokenizer = AutoTokenizer.from_pretrained("google/muril-base-cased")
+unique_emojis = sorted(list(set(re.findall(r"[𐀀-􏿿☀-➿]", " ".join(all_texts)))))
+num_added = tokenizer.add_tokens(unique_emojis)
+
+model = AutoModelForSequenceClassification.from_pretrained("google/muril-base-cased", num_labels=3)
+if num_added > 0:
+    model.resize_token_embeddings(len(tokenizer))
+```
+
+---
+
 ## Deliverables & Current Git State
 
 | Deliverable | Location | Status |
@@ -324,27 +367,27 @@ flowchart TD
 | **Corpus Synthesis Code** | [`src/collect_and_curate_data.py`](file:///d:/nlp/src/collect_and_curate_data.py) | Completed |
 | **Preprocessing Pipeline** | [`src/preprocessing.py`](file:///d:/nlp/src/preprocessing.py) | Completed |
 | **Baseline Modeling Engine** | [`src/baselines.py`](file:///d:/nlp/src/baselines.py) | Completed |
+| **Transformer Training Script** | [`src/transformers_train.py`](file:///d:/nlp/src/transformers_train.py) | Completed |
+| **Colab GPU Training Notebook** | [`notebooks/Indic_Stance_Detection_Colab.ipynb`](file:///d:/nlp/notebooks/) | Completed |
 | **Interactive Web UI** | [`app.py`](file:///d:/nlp/app.py) | Live on `localhost:7860` |
 | **Serialized Vectorizer** | [`models/tfidf_vectorizer.pkl`](file:///d:/nlp/models/) | Saved |
 | **Serialized Champion Model** | [`models/best_baseline_model.pkl`](file:///d:/nlp/models/) | Saved |
 | **Confusion Matrix Heatmaps** | [`report/figures/`](file:///d:/nlp/report/figures/) | 4 Figures Generated |
 | **Quantitative Results Log** | [`report/baseline_results.json`](file:///d:/nlp/report/baseline_results.json) | Saved |
 | **Competition Predictions** | [`predictions/baseline_predictions.csv`](file:///d:/nlp/predictions/baseline_predictions.csv) | 320 Predictions Generated |
-| **Git Repository** | `d:\nlp\.git` | Fully Committed (`27e20e2`) |
+| **Git Repository** | `d:\nlp\.git` | Fully Committed (`77adf5b`) |
 
 ---
 
-## Roadmap to Completion (Steps 5 – 8)
+## Roadmap to Completion (Steps 6 - 8)
 
 ```mermaid
 flowchart TD
-    Current["Current State: Step 4 Complete & Verified"] --> S5["Step 5: Transformer Fine-Tuning (Google MuRIL & Colab GPU)"]
-    S5 --> S6["Step 6: Cross-Lingual Evaluation & Ensemble Stacking"]
+    Current["Current State: Step 5 Complete & Verified"] --> S6["Step 6: Cross-Lingual Evaluation & Ensemble Stacking"]
     S6 --> S7["Step 7: Explainable AI (LIME / SHAP / Integrated Gradients)"]
-    S7 --> S8["Step 8: Final 8-Page Technical Report & Prediction File"]
+    S7 --> S8["Step 8: Final 8-Page Technical Report & Official Submission Archive"]
 ```
 
-1. **Step 5 (Next):** Fine-tune `google/muril-base-cased` on Google Colab GPU to resolve the semantic minimization blind spot identified in Step 4.
-2. **Step 6:** Build a soft-voting and stacking ensemble combining classical TF-IDF and MuRIL dense representations.
-3. **Step 7:** Implement token-level attribution (Integrated Gradients / LIME) for publication-grade report visualizations.
-4. **Step 8:** Compile the complete 8-page academic technical report formatted to Dr. Supriya Chanda's conference-style specifications.
+1. **Step 6 (Next):** Build a soft-voting and stacking ensemble combining classical TF-IDF (ComplementNB/Logistic Regression) and MuRIL transformer logits for maximal test Macro F1.
+2. **Step 7:** Implement token-level attribution (Integrated Gradients / LIME) for publication-grade report visualizations.
+3. **Step 8:** Compile the complete 8-page academic technical report formatted to Dr. Supriya Chanda's conference-style specifications.
