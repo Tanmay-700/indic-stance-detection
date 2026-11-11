@@ -1,0 +1,86 @@
+{
+  "Hindi-Only__on__Hindi": {
+    "description": "In-Language (H -> H)",
+    "train_samples": 1280,
+    "test_samples": 160,
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "per_class_f1": {
+      "AGAINST": 1.0,
+      "FAVOUR": 1.0,
+      "NONE": 1.0
+    }
+  },
+  "Hindi-Only__on__Bengali": {
+    "description": "Zero-Shot Transfer (H -> B)",
+    "train_samples": 1280,
+    "test_samples": 160,
+    "accuracy": 0.6438,
+    "macro_f1": 0.6159,
+    "macro_precision": 0.6995,
+    "macro_recall": 0.6316,
+    "per_class_f1": {
+      "AGAINST": 0.5859,
+      "FAVOUR": 0.5135,
+      "NONE": 0.7483
+    }
+  },
+  "Bengali-Only__on__Bengali": {
+    "description": "In-Language (B -> B)",
+    "train_samples": 1280,
+    "test_samples": 160,
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "per_class_f1": {
+      "AGAINST": 1.0,
+      "FAVOUR": 1.0,
+      "NONE": 1.0
+    }
+  },
+  "Bengali-Only__on__Hindi": {
+    "description": "Zero-Shot Transfer (B -> H)",
+    "train_samples": 1280,
+    "test_samples": 160,
+    "accuracy": 0.5375,
+    "macro_f1": 0.5049,
+    "macro_precision": 0.5768,
+    "macro_recall": 0.5225,
+    "per_class_f1": {
+      "AGAINST": 0.3438,
+      "FAVOUR": 0.5556,
+      "NONE": 0.6154
+    }
+  },
+  "Joint Bilingual__on__Hindi": {
+    "description": "Joint Multi (Joint -> H)",
+    "train_samples": 2560,
+    "test_samples": 160,
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "per_class_f1": {
+      "AGAINST": 1.0,
+      "FAVOUR": 1.0,
+      "NONE": 1.0
+    }
+  },
+  "Joint Bilingual__on__Bengali": {
+    "description": "Joint Multi (Joint -> B)",
+    "train_samples": 2560,
+    "test_samples": 160,
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "per_class_f1": {
+      "AGAINST": 1.0,
+      "FAVOUR": 1.0,
+      "NONE": 1.0
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "model": "Soft-Voting Ensemble (LogisticRegression + ComplementNB)",
+  "weights": {
+    "LogisticRegression": 0.5,
+    "ComplementNB": 0.5
+  },
+  "validation": {
+    "macro_f1": 0.9967
+  },
+  "test": {
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "per_class_f1": {
+      "AGAINST": 1.0,
+      "FAVOUR": 1.0,
+      "NONE": 1.0
+    }
+  },
+  "language_breakdown": {
+    "Hindi": {
+      "samples": 160,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "per_class_f1": {
+        "AGAINST": 1.0,
+        "FAVOUR": 1.0,
+        "NONE": 1.0
+      }
+    },
+    "Bengali": {
+      "samples": 160,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "per_class_f1": {
+        "AGAINST": 1.0,
+        "FAVOUR": 1.0,
+        "NONE": 1.0
+      }
+    }
+  },
+  "confusion_matrix": [
+    [
+      96,
+      0,
+      0
+    ],
+    [
+      0,
+      106,
+      0
+    ],
+    [
+      0,
+      0,
+      118
+    ]
+  ]
+}

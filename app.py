@@ -46,11 +46,44 @@ VEC_PATH = os.path.join(MODELS_DIR, "tfidf_vectorizer.pkl")
 print("Loading TF-IDF Vectorizer and ML Models...")
 vectorizer = joblib.load(VEC_PATH)
 
+# Load base models
+_cnb = joblib.load(os.path.join(MODELS_DIR, "model_complementnb.pkl"))
+_lr = joblib.load(os.path.join(MODELS_DIR, "model_logisticregression.pkl"))
+_svc = joblib.load(os.path.join(MODELS_DIR, "model_linearsvc.pkl"))
+_rf = joblib.load(os.path.join(MODELS_DIR, "model_randomforest.pkl"))
+
+# Soft-Voting Ensemble Wrapper
+class SoftVotingWrapper:
+    def __init__(self, clf_lr, clf_cnb, classes, weights):
+        self.clf_lr = clf_lr
+        self.clf_cnb = clf_cnb
+        self.classes_ = np.array(classes)
+        self.weights = weights
+        
+    def predict_proba(self, X):
+        p_lr = self.clf_lr.predict_proba(X)
+        p_cnb = self.clf_cnb.predict_proba(X)
+        w_lr, w_cnb = self.weights
+        return (w_lr * p_lr) + (w_cnb * p_cnb)
+        
+    def predict(self, X):
+        probs = self.predict_proba(X)
+        return self.classes_[np.argmax(probs, axis=-1)]
+
+# Load saved ensemble bundle if available
+ensemble_path = os.path.join(MODELS_DIR, "ensemble_soft_voting.pkl")
+if os.path.exists(ensemble_path):
+    bundle = joblib.load(ensemble_path)
+    _ens = SoftVotingWrapper(_lr, _cnb, bundle["classes"], bundle["weights"])
+else:
+    _ens = SoftVotingWrapper(_lr, _cnb, ["AGAINST", "FAVOUR", "NONE"], (0.5, 0.5))
+
 MODEL_REGISTRY = {
-    "ComplementNB (Champion Baseline)": joblib.load(os.path.join(MODELS_DIR, "model_complementnb.pkl")),
-    "Logistic Regression (Balanced L2)": joblib.load(os.path.join(MODELS_DIR, "model_logisticregression.pkl")),
-    "Linear SVC (Max-Margin Hyperplane)": joblib.load(os.path.join(MODELS_DIR, "model_linearsvc.pkl")),
-    "Random Forest (100 Trees Ensemble)": joblib.load(os.path.join(MODELS_DIR, "model_randomforest.pkl"))
+    "Hybrid Soft-Voting Ensemble (Champion LR + CNB)": _ens,
+    "ComplementNB (Champion Baseline)": _cnb,
+    "Logistic Regression (Balanced L2)": _lr,
+    "Linear SVC (Max-Margin Hyperplane)": _svc,
+    "Random Forest (100 Trees Ensemble)": _rf
 }
 
 CLASSES = ["AGAINST", "FAVOUR", "NONE"]
@@ -184,9 +217,9 @@ with gr.Blocks(title="Indic Stance Detection - Global Warming") as demo:
                         lines=4
                     )
                     model_dropdown = gr.Dropdown(
-                        label="Select Baseline ML Classifier",
+                        label="Select ML / Ensemble Classifier",
                         choices=list(MODEL_REGISTRY.keys()),
-                        value="ComplementNB (Champion Baseline)"
+                        value="Hybrid Soft-Voting Ensemble (Champion LR + CNB)"
                     )
                     predict_btn = gr.Button("Analyze Stance", variant="primary", size="lg")
                     
@@ -205,8 +238,8 @@ with gr.Blocks(title="Indic Stance Detection - Global Warming") as demo:
                 outputs=[output_badge, output_probs, out_cleaned, out_tokens]
             )
 
-        with gr.TabItem("⚖️ Compare All 4 Models Side-by-Side"):
-            gr.Markdown("Type a challenging comment below (e.g. sarcastic comment or subtle minimization) to see how all 4 classifiers react:")
+        with gr.TabItem("⚖️ Compare All Models Side-by-Side"):
+            gr.Markdown("Type a challenging comment below (e.g. sarcastic comment or subtle minimization) to see how all classifiers (including the Ensemble) react:")
             with gr.Row():
                 cmp_input = gr.Textbox(
                     label="Comment to Compare Across Models",
