@@ -70,6 +70,53 @@ class SoftVotingWrapper:
         probs = self.predict_proba(X)
         return self.classes_[np.argmax(probs, axis=-1)]
 
+# MuRIL Contextual Transformer Wrapper
+class MuRILWrapper:
+    def __init__(self, model_dir):
+        import torch
+        from transformers import AutoTokenizer, AutoModelForSequenceClassification
+        print(f"Loading MuRIL Transformer from {model_dir}...")
+        self.tokenizer = AutoTokenizer.from_pretrained(model_dir)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+        self.model.eval()
+        self.classes_ = np.array(["AGAINST", "FAVOUR", "NONE"])
+        
+    def predict_proba_from_text(self, texts):
+        import torch
+        if isinstance(texts, str):
+            texts = [texts]
+        inputs = self.tokenizer(texts, padding=True, truncation=True, max_length=128, return_tensors="pt")
+        with torch.no_grad():
+            logits = self.model(**inputs).logits
+            probs = torch.softmax(logits, dim=-1).cpu().numpy()
+        return probs
+
+    def predict_from_text(self, texts):
+        probs = self.predict_proba_from_text(texts)
+        return self.classes_[np.argmax(probs, axis=-1)]
+
+# Full Hybrid Ensemble (MuRIL Context + Dual TF-IDF LR)
+class FullHybridEnsembleWrapper:
+    def __init__(self, muril_wrapper, tfidf_lr, vectorizer, w_muril=0.70):
+        self.muril = muril_wrapper
+        self.tfidf_lr = tfidf_lr
+        self.vectorizer = vectorizer
+        self.w_muril = w_muril
+        self.w_lr = 1.0 - w_muril
+        self.classes_ = np.array(["AGAINST", "FAVOUR", "NONE"])
+        
+    def predict_proba_from_text(self, texts):
+        p_muril = self.muril.predict_proba_from_text(texts)
+        if isinstance(texts, str):
+            texts = [texts]
+        X = self.vectorizer.transform(texts)
+        p_lr = self.tfidf_lr.predict_proba(X)
+        return (self.w_muril * p_muril) + (self.w_lr * p_lr)
+        
+    def predict_from_text(self, texts):
+        probs = self.predict_proba_from_text(texts)
+        return self.classes_[np.argmax(probs, axis=-1)]
+
 # Load saved ensemble bundle if available
 ensemble_path = os.path.join(MODELS_DIR, "ensemble_soft_voting.pkl")
 if os.path.exists(ensemble_path):
@@ -78,13 +125,25 @@ if os.path.exists(ensemble_path):
 else:
     _ens = SoftVotingWrapper(_lr, _cnb, ["AGAINST", "FAVOUR", "NONE"], (0.5, 0.5))
 
-MODEL_REGISTRY = {
-    "Hybrid Soft-Voting Ensemble (Champion LR + CNB)": _ens,
-    "ComplementNB (Champion Baseline)": _cnb,
-    "Logistic Regression (Balanced L2)": _lr,
-    "Linear SVC (Max-Margin Hyperplane)": _svc,
-    "Random Forest (100 Trees Ensemble)": _rf
-}
+# Check for local MuRIL fine-tuned weights
+muril_dir = os.path.join(MODELS_DIR, "transformer_muril")
+has_muril = os.path.exists(os.path.join(muril_dir, "config.json"))
+
+MODEL_REGISTRY = {}
+if has_muril:
+    try:
+        _muril = MuRILWrapper(muril_dir)
+        _full_ens = FullHybridEnsembleWrapper(_muril, _lr, vectorizer, w_muril=0.70)
+        MODEL_REGISTRY["Full Hybrid Ensemble (MuRIL Context + Dual TF-IDF LR)"] = _full_ens
+        MODEL_REGISTRY["Google MuRIL (Fine-Tuned Transformer)"] = _muril
+    except Exception as e:
+        print(f"Warning: Could not load MuRIL model from {muril_dir}: {e}")
+
+MODEL_REGISTRY["Classical Ensemble (ComplementNB + Logistic Regression)"] = _ens
+MODEL_REGISTRY["ComplementNB (Champion Baseline)"] = _cnb
+MODEL_REGISTRY["Logistic Regression (Balanced L2)"] = _lr
+MODEL_REGISTRY["Linear SVC (Max-Margin Hyperplane)"] = _svc
+MODEL_REGISTRY["Random Forest (100 Trees Ensemble)"] = _rf
 
 CLASSES = ["AGAINST", "FAVOUR", "NONE"]
 
@@ -121,20 +180,20 @@ def predict_single(text: str, model_name: str):
     cleaned = clean_indic_text(text)
     tokens = indic_tokenize(cleaned)
     
-    # 2. Vectorization
-    X = vectorizer.transform([cleaned])
-    
-    # 3. Prediction
-    pred_label = model.predict(X)[0]
-    
-    # 4. Confidence Probabilities
-    if hasattr(model, "predict_proba"):
-        probs = model.predict_proba(X)[0]
-    elif hasattr(model, "decision_function"):
-        dfunc = model.decision_function(X)[0]
-        probs = softmax(dfunc)
+    # 2. Prediction & Confidence
+    if hasattr(model, "predict_from_text"):
+        pred_label = model.predict_from_text([cleaned])[0]
+        probs = model.predict_proba_from_text([cleaned])[0]
     else:
-        probs = np.array([1.0 if c == pred_label else 0.0 for c in model.classes_])
+        X = vectorizer.transform([cleaned])
+        pred_label = model.predict(X)[0]
+        if hasattr(model, "predict_proba"):
+            probs = model.predict_proba(X)[0]
+        elif hasattr(model, "decision_function"):
+            dfunc = model.decision_function(X)[0]
+            probs = softmax(dfunc)
+        else:
+            probs = np.array([1.0 if c == pred_label else 0.0 for c in model.classes_])
         
     prob_dict = {
         cls_name: round(float(prob), 4)
@@ -166,17 +225,21 @@ def compare_all_models(text: str):
     
     records = []
     for m_name, model in MODEL_REGISTRY.items():
-        pred = model.predict(X)[0]
-        
-        if hasattr(model, "predict_proba"):
-            probs = model.predict_proba(X)[0]
-            conf = float(np.max(probs)) * 100
-        elif hasattr(model, "decision_function"):
-            dfunc = model.decision_function(X)[0]
-            probs = softmax(dfunc)
+        if hasattr(model, "predict_from_text"):
+            pred = model.predict_from_text([cleaned])[0]
+            probs = model.predict_proba_from_text([cleaned])[0]
             conf = float(np.max(probs)) * 100
         else:
-            conf = 100.0
+            pred = model.predict(X)[0]
+            if hasattr(model, "predict_proba"):
+                probs = model.predict_proba(X)[0]
+                conf = float(np.max(probs)) * 100
+            elif hasattr(model, "decision_function"):
+                dfunc = model.decision_function(X)[0]
+                probs = softmax(dfunc)
+                conf = float(np.max(probs)) * 100
+            else:
+                conf = 100.0
             
         records.append({
             "Model": m_name,
@@ -207,6 +270,13 @@ with gr.Blocks(title="Indic Stance Detection - Global Warming") as demo:
         """
     )
     
+    if not has_muril:
+        gr.Markdown(
+            """
+            > 💡 **Note on Google MuRIL:** MuRIL was fine-tuned on Google Colab GPU. To run MuRIL inference inside this local UI, download `best_muril_model` from Colab into `models/transformer_muril/`. You can also launch this exact Gradio app directly inside Colab with GPU acceleration!
+            """
+        )
+    
     with gr.Tabs():
         with gr.TabItem("🔍 Single Model Deep-Dive"):
             with gr.Row():
@@ -219,7 +289,7 @@ with gr.Blocks(title="Indic Stance Detection - Global Warming") as demo:
                     model_dropdown = gr.Dropdown(
                         label="Select ML / Ensemble Classifier",
                         choices=list(MODEL_REGISTRY.keys()),
-                        value="Hybrid Soft-Voting Ensemble (Champion LR + CNB)"
+                        value=list(MODEL_REGISTRY.keys())[0]
                     )
                     predict_btn = gr.Button("Analyze Stance", variant="primary", size="lg")
                     
@@ -260,15 +330,17 @@ with gr.Blocks(title="Indic Stance Detection - Global Warming") as demo:
             )
             
     gr.Markdown("### 💡 Click any preset example below to test immediately:")
+    default_model = list(MODEL_REGISTRY.keys())[0]
     gr.Examples(
         examples=[
-            ["जलवायु परिवर्तन पृथ्वी के अस्तित्व के लिए एक बड़ा संकट है, तत्काल कार्रवाई जरूरी है 🌱 🌍", "ComplementNB (Champion Baseline)"],
-            ["हाँ भाई, ग्लोबल वार्मिंग तो शायद मौसम का मूड स्विंग है 😂 🤡", "ComplementNB (Champion Baseline)"],
-            ["ग्लोबल वार्मिंग केवल पश्चिमी देशों का ढोंग और नाटक है 🙄", "ComplementNB (Champion Baseline)"],
-            ["हিমালয়ের হিমবাহ দ্রুত গলে যাচ্ছে, পরিবেশ রক্ষা আমাদের সবার দায়িত্ব ⚠️ 🌱", "ComplementNB (Champion Baseline)"],
-            ["পশ্চিমী ঢং বাদ দিন, মানুষ সৃষ্টি থেকেই সব ধরনের জলবায়ুতে মানিয়ে নিয়েছে 🤡", "ComplementNB (Champion Baseline)"],
-            ["आज दिल्ली में सुबह से बहुत तेज़ बारिश हो रही है और मौसम ठंडा है ।", "ComplementNB (Champion Baseline)"],
-            ["सर आपका वीडियो बहुत ज्ञानवर्धक है, चैनल को सब्सक्राइब कर दिया 👍 👏", "ComplementNB (Champion Baseline)"]
+            ["जलवायु परिवर्तन पृथ्वी के अस्तित्व के लिए एक बड़ा संकट है, तत्काल कार्रवाई जरूरी है 🌱 🌍", default_model],
+            ["हाँ भाई, ग्लोबल वार्मिंग तो शायद मौसम का मूड स्विंग है 😂 🤡", default_model],
+            ["पेड़ काटने से कुछ नहीं होता, प्रकृति खुद सब संभाल लेती है", default_model],
+            ["ग्लोबल वार्मिंग केवल पश्चिमी देशों का ढोंग और नाटक है 🙄", default_model],
+            ["হিমালয়ের হিমবাহ দ্রুত গলে যাচ্ছে, পরিবেশ রক্ষা আমাদের সবার দায়িত্ব ⚠️ 🌱", default_model],
+            ["পশ্চিমী ঢং বাদ দিন, মানুষ সৃষ্টি থেকেই সব ধরনের জলবায়ুতে মানিয়ে নিয়েছে 🤡", default_model],
+            ["आज दिल्ली में सुबह से बहुत तेज़ बारिश हो रही है और मौसम ठंडा है ।", default_model],
+            ["सर आपका वीडियो बहुत ज्ञानवर्धक है, चैनल को सब्सक्राइब कर दिया 👍 👏", default_model]
         ],
         inputs=[input_text, model_dropdown]
     )
