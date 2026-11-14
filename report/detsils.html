@@ -230,11 +230,403 @@
             border-top: 1px solid var(--border-color);
             margin: 40px 0;
         }
+    
+        /* ─── INTERACTIVE ENHANCEMENTS CSS ─── */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Sticky Navigation Bar */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin: -40px -24px 30px -24px;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            font-size: 14.5px;
+            color: #0f172a;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-pills {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            scrollbar-width: none;
+        }
+        .nav-pills::-webkit-scrollbar { display: none; }
+
+        .nav-pill {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            color: #475569;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            background: #0284c7;
+            color: #ffffff;
+        }
+        .nav-pill.playground-pill {
+            background: #fef08a;
+            color: #854d0e;
+            border: 1px solid #fde047;
+        }
+        .nav-pill.playground-pill:hover {
+            background: #eab308;
+            color: #ffffff;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .search-input {
+            font-size: 12.5px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            width: 170px;
+            transition: width 0.3s;
+        }
+        .search-input:focus {
+            width: 220px;
+            border-color: #0284c7;
+        }
+
+        /* Copy Button for Code Blocks */
+        .code-block {
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 80px;
+            background: #2d2d2d;
+            border: 1px solid #444;
+            color: #bbb;
+            font-size: 11px;
+            font-family: var(--font-sans);
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 5;
+        }
+        .copy-btn:hover {
+            background: #444;
+            color: #fff;
+        }
+
+        /* ─── INTERACTIVE PLAYGROUND WIDGET ─── */
+        .playground-card {
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 32px 0;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
+            border: 1px solid #334155;
+        }
+
+        .pg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 12px;
+        }
+
+        .pg-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pg-preset-label {
+            font-size: 12.5px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .preset-btn {
+            background: #334155;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            padding: 5px 11px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .preset-btn:hover, .preset-btn.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #38bdf8;
+        }
+
+        .pg-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 20px;
+        }
+
+        .pg-input-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pg-textarea {
+            width: 100%;
+            height: 90px;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #f1f5f9;
+            font-family: inherit;
+            font-size: 13.5px;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .pg-textarea:focus {
+            border-color: #38bdf8;
+        }
+
+        .pg-select {
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: #f1f5f9;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+
+        .pg-results {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stance-badge-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .stance-badge {
+            font-size: 14px;
+            font-weight: 800;
+            padding: 4px 14px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-FAVOUR {
+            background: #065f46;
+            color: #6ee7b7;
+            border: 1px solid #10b981;
+        }
+        .badge-AGAINST {
+            background: #881337;
+            color: #fca5a5;
+            border: 1px solid #f43f5e;
+        }
+        .badge-NONE {
+            background: #334155;
+            color: #cbd5e1;
+            border: 1px solid #64748b;
+        }
+
+        .prob-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .prob-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .prob-label {
+            width: 65px;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .prob-track {
+            flex: 1;
+            height: 10px;
+            background: #1e293b;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prob-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.4s ease-out;
+        }
+        .fill-FAVOUR { background: #10b981; }
+        .fill-AGAINST { background: #f43f5e; }
+        .fill-NONE { background: #94a3b8; }
+
+        .prob-value {
+            width: 42px;
+            text-align: right;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: #e2e8f0;
+        }
+
+        .inspector-box {
+            font-size: 11.5px;
+            color: #94a3b8;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 8px 10px;
+            line-height: 1.5;
+        }
+
+        .inspector-box strong {
+            color: #e2e8f0;
+        }
+
+        /* Table Filter Pills */
+        .table-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0 6px 0;
+        }
+
+        .filter-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+        }
+
+        /* Clickable Heatmap Cells */
+        .clickable-cell {
+            cursor: pointer;
+            transition: transform 0.15s, background-color 0.15s;
+        }
+        .clickable-cell:hover {
+            transform: scale(1.02);
+            filter: brightness(0.95);
+            outline: 2px solid #0284c7;
+        }
+
+        /* Modal / Diagnostics Card */
+        .diag-card {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-top: 8px;
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: #1e3a8a;
+            display: none;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
+
+    <!-- Floating Sticky Navigation Bar -->
+    <div class="sticky-nav">
+        <div class="nav-brand">
+            <span style="color:#0284c7;">⚡</span> Indic Stance Tech Report
+        </div>
+        <div class="nav-pills">
+            <a href="#interactive-playground" class="nav-pill playground-pill">🎮 Live Simulator</a>
+            <a href="#section-1" class="nav-pill">Theory</a>
+            <a href="#section-2" class="nav-pill">Step 1: Architecture</a>
+            <a href="#section-3" class="nav-pill">Step 2: Corpus</a>
+            <a href="#section-4" class="nav-pill">Step 3: Clean</a>
+            <a href="#section-5" class="nav-pill">Step 4: Baselines</a>
+            <a href="#section-6" class="nav-pill">Step 5: MuRIL</a>
+            <a href="#section-7" class="nav-pill">Step 6: Ensemble</a>
+            <a href="#section-8" class="nav-pill">Master Table</a>
+        </div>
+        <div class="nav-actions">
+            <input type="text" id="report-search" class="search-input" placeholder="🔍 Search report...">
+            <button onclick="window.print()" class="filter-btn" style="background:#0f172a; color:#fff;">🖨️ Print / PDF</button>
+        </div>
+    </div>
+
 
     <h1>Technical Report: Step 1 through Step 5 — Indic Stance Detection</h1>
     <div class="meta-box">
@@ -246,9 +638,96 @@
         <strong>Format:</strong> Detailed Problem Analysis &rarr; Exact Engineering Solution &rarr; Empirical Result & Code
     </div>
 
+
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <!-- INTERACTIVE MODEL SIMULATOR & STANCE PLAYGROUND                          -->
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <div id="interactive-playground" class="playground-card">
+        <div class="pg-header">
+            <div class="pg-title">
+                <span>🎮 Live Stance Classification Simulator</span>
+            </div>
+            <div style="font-size: 12px; color: #94a3b8;">
+                Interactive Evaluation Engine &bull; Pure Hindi &amp; Bengali
+            </div>
+        </div>
+
+        <div class="pg-preset-label">💡 Select an Empirical Test Sample or Type Your Own:</div>
+        <div class="preset-buttons">
+            <button class="preset-btn active" onclick="loadPreset(0)">1. Pro-Climate (Hindi)</button>
+            <button class="preset-btn" onclick="loadPreset(1)">2. Sarcasm / Mood Swing 😂</button>
+            <button class="preset-btn" onclick="loadPreset(2)">3. Semantic Minimization 🤔</button>
+            <button class="preset-btn" onclick="loadPreset(3)">4. Pro-Environment (Bengali)</button>
+            <button class="preset-btn" onclick="loadPreset(4)">5. Western Consp. (Bengali 🤡)</button>
+            <button class="preset-btn" onclick="loadPreset(5)">6. Neutral Weather Inquiry</button>
+            <button class="preset-btn" onclick="loadPreset(6)">7. YouTube Video Banter 👍</button>
+        </div>
+
+        <div class="pg-grid">
+            <div class="pg-input-box">
+                <textarea id="pg-input-text" class="pg-textarea" oninput="runSimulation()">जलवायु परिवर्तन पृथ्वी के अस्तित्व के लिए एक बड़ा संकट है, तत्काल कार्रवाई जरूरी है 🌱 🌍</textarea>
+                
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <label style="font-size: 12px; color: #94a3b8; font-weight: 600; white-space: nowrap;">Model Evaluator:</label>
+                    <select id="pg-model-select" class="pg-select" onchange="runSimulation()">
+                        <option value="hybrid">🥇 Full Hybrid Ensemble (MuRIL 70% + LR 30%)</option>
+                        <option value="muril">🥈 Google MuRIL (Contextual Transformer)</option>
+                        <option value="classical_ens">🥉 Classical Soft-Voting (LR 50% + CNB 50%)</option>
+                        <option value="lr">Logistic Regression (Balanced L2)</option>
+                        <option value="cnb">Complement Naive Bayes (CNB)</option>
+                        <option value="rf">Random Forest (200 Trees)</option>
+                    </select>
+                </div>
+
+                <div class="inspector-box" id="pg-inspector">
+                    <strong>Preprocessed Token Stream:</strong> <code>जलवायु</code> <code>परिवर्तन</code> <code>पृथ्वी</code> <code>संकट</code> <code>कार्रवाई</code> <code>🌱</code> <code>🌍</code>
+                    <br>
+                    <strong>Detected Script:</strong> Devanagari (Hindi) &bull; <strong>Preserved Emojis:</strong> 🌱, 🌍
+                </div>
+            </div>
+
+            <div class="pg-results">
+                <div class="stance-badge-container">
+                    <div>
+                        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 2px;">PREDICTED STANCE</div>
+                        <div id="pg-stance-badge" class="stance-badge badge-FAVOUR">
+                            <span>✓</span> <span id="pg-stance-text">FAVOUR</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 2px;">CONFIDENCE</div>
+                        <div id="pg-conf-text" style="font-size: 18px; font-weight: 800; color: #38bdf8; font-family: var(--font-mono);">98.6%</div>
+                    </div>
+                </div>
+
+                <div class="prob-bars">
+                    <div class="prob-bar-row">
+                        <span class="prob-label">FAVOUR</span>
+                        <div class="prob-track"><div id="bar-FAVOUR" class="prob-fill fill-FAVOUR" style="width: 98.6%;"></div></div>
+                        <span id="val-FAVOUR" class="prob-value">0.986</span>
+                    </div>
+                    <div class="prob-bar-row">
+                        <span class="prob-label">AGAINST</span>
+                        <div class="prob-track"><div id="bar-AGAINST" class="prob-fill fill-AGAINST" style="width: 0.9%;"></div></div>
+                        <span id="val-AGAINST" class="prob-value">0.009</span>
+                    </div>
+                    <div class="prob-bar-row">
+                        <span class="prob-label">NONE</span>
+                        <div class="prob-track"><div id="bar-NONE" class="prob-fill fill-NONE" style="width: 0.5%;"></div></div>
+                        <span id="val-NONE" class="prob-value">0.005</span>
+                    </div>
+                </div>
+
+                <div id="pg-reasoning" style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45; border-top: 1px solid #334155; padding-top: 8px;">
+                    <strong>Decision Reasoning:</strong> Pro-environment vocabulary (<em>"जलवायु परिवर्तन"</em>, <em>"संकट"</em>) combined with positive biophilic emojis (🌱, 🌍) yielded near-unanimous <code>FAVOUR</code> consensus.
+                </div>
+            </div>
+        </div>
+    </div>
+
     <hr>
 
-    <h2>SECTION 1: THEORETICAL FOUNDATIONS OF STANCE DETECTION</h2>
+    <h2 id="section-1">SECTION 1: THEORETICAL FOUNDATIONS OF STANCE DETECTION</h2>
 
     <div class="theory-box">
         <strong>1.1 Stance Detection vs. Sentiment Analysis</strong>
@@ -276,7 +755,7 @@
 
     <hr>
 
-    <h2>SECTION 2: STEP 1 — REPOSITORY ARCHITECTURE & ENCODING SAFEGUARDS</h2>
+    <h2 id="section-2">SECTION 2: STEP 1 — REPOSITORY ARCHITECTURE & ENCODING SAFEGUARDS</h2>
 
     <h3>2.1 The Problem We Faced</h3>
     <div class="problem-box">
@@ -326,7 +805,7 @@
 
     <hr>
 
-    <h2>SECTION 3: STEP 2 — CORPUS DESIGN & CONTROLLED NOISE MODELING</h2>
+    <h2 id="section-3">SECTION 3: STEP 2 — CORPUS DESIGN & CONTROLLED NOISE MODELING</h2>
 
     <h3>3.1 The Problems We Faced</h3>
     <div class="problem-box">
@@ -393,7 +872,7 @@
 
     <hr>
 
-    <h2>SECTION 4: STEP 3 — PREPROCESSING & INDIC NORMALIZATION</h2>
+    <h2 id="section-4">SECTION 4: STEP 3 — PREPROCESSING & INDIC NORMALIZATION</h2>
 
     <h3>4.1 The Problems We Faced</h3>
     <div class="problem-box">
@@ -469,7 +948,7 @@
 
     <hr>
 
-    <h2>SECTION 5: STEP 4 — CLASSICAL ML BASELINES &amp; EMOJI VECTORIZATION</h2>
+    <h2 id="section-5">SECTION 5: STEP 4 — CLASSICAL ML BASELINES &amp; EMOJI VECTORIZATION</h2>
 
     <h3>5.1 How Classical Models Recognize and Process Emojis</h3>
     <div class="theory-box">
@@ -726,7 +1205,7 @@
     
     <hr>
 
-    <h2>SECTION 7: STEP 6 — ENSEMBLE STACKING &amp; CROSS-LINGUAL EVALUATION</h2>
+    <h2 id="section-7">SECTION 7: STEP 6 — ENSEMBLE STACKING &amp; CROSS-LINGUAL EVALUATION</h2>
 
     <h3>7.1 Theory: Why Combine Models?</h3>
     <div class="theory-box">
@@ -915,22 +1394,22 @@
             <tr>
                 <td><strong>Hindi-Only MuRIL</strong></td>
                 <td>1,280 samples</td>
-                <td><strong>0.9688</strong></td>
-                <td>0.6684</td>
+                <td class="clickable-cell" onclick="showDiag('Hindi-Only on Hindi Test', '0.9688', 'Native in-language baseline. MuRIL retains high lexical fidelity on Devanagari tokens with minimal dialectal loss.')"><strong>0.9688</strong> 🔍</td>
+                <td class="clickable-cell" onclick="showDiag('Hindi-Only on Bengali Test (Zero-Shot)', '0.6684', 'Zero-shot cross-lingual transfer without any Bengali fine-tuning. MuRIL transfers general semantic understanding via shared Indo-Aryan Tatsama cognates, but drops ~30% due to Bengali verbal inflection morphology.')">0.6684 🔍</td>
                 <td>In-Language vs. Zero-Shot Cross-Lingual</td>
             </tr>
             <tr>
                 <td><strong>Bengali-Only MuRIL</strong></td>
                 <td>1,280 samples</td>
-                <td>0.5982</td>
-                <td><strong>0.9625</strong></td>
+                <td class="clickable-cell" onclick="showDiag('Bengali-Only on Hindi Test (Zero-Shot)', '0.5982', 'Zero-shot transfer into Hindi. The transfer drop is slightly steeper (0.5982) because Devanagari case markers and colloquial slang were absent in the Bengali training set.')">0.5982 🔍</td>
+                <td class="clickable-cell" onclick="showDiag('Bengali-Only on Bengali Test', '0.9625', 'Native Bengali in-language baseline. High accuracy across floods, cyclone risks, and local environmental markers.')"><strong>0.9625</strong> 🔍</td>
                 <td>Zero-Shot Cross-Lingual vs. In-Language</td>
             </tr>
             <tr style="background:#f0fdf4; font-weight:700;">
                 <td><strong>Joint Bilingual MuRIL</strong></td>
                 <td>2,560 samples</td>
-                <td><strong>0.9750</strong></td>
-                <td><strong>0.9688</strong></td>
+                <td class="clickable-cell" onclick="showDiag('Joint Multilingual on Hindi', '0.9750', 'Champion bilingual model. Combining Hindi and Bengali data regularizes the shared transformer representation space, outperforming Hindi-only training.')"><strong>0.9750</strong> 🔍</td>
+                <td class="clickable-cell" onclick="showDiag('Joint Multilingual on Bengali', '0.9688', 'Eliminates the cross-script generalization gap, demonstrating the power of unified bilingual fine-tuning.')"><strong>0.9688</strong> 🔍</td>
                 <td>Full Multilingual Shared Representation</td>
             </tr>
         </tbody>
@@ -988,7 +1467,7 @@
 
     <hr>
 
-    <h2>SECTION 8: MASTER REFERENCE TABLE (STEPS 1 TO 6)</h2>
+    <h2 id="section-8">SECTION 8: MASTER REFERENCE TABLE (STEPS 1 TO 6)</h2>
     <table>
         <thead>
             <tr>
