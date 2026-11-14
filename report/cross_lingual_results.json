@@ -1,86 +1,86 @@
 {
   "Hindi-Only__on__Hindi": {
-    "description": "In-Language (H -> H)",
+    "description": "In-Language (Hindi -> Hindi)",
     "train_samples": 1280,
     "test_samples": 160,
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "macro_precision": 1.0,
-    "macro_recall": 1.0,
+    "accuracy": 0.9688,
+    "macro_f1": 0.9685,
+    "macro_precision": 0.9692,
+    "macro_recall": 0.9681,
     "per_class_f1": {
-      "AGAINST": 1.0,
-      "FAVOUR": 1.0,
-      "NONE": 1.0
+      "AGAINST": 0.9623,
+      "FAVOUR": 0.9714,
+      "NONE": 0.9718
     }
   },
   "Hindi-Only__on__Bengali": {
-    "description": "Zero-Shot Transfer (H -> B)",
+    "description": "Zero-Shot Transfer (Hindi -> Bengali)",
     "train_samples": 1280,
     "test_samples": 160,
-    "accuracy": 0.6438,
-    "macro_f1": 0.6159,
-    "macro_precision": 0.6995,
-    "macro_recall": 0.6316,
+    "accuracy": 0.675,
+    "macro_f1": 0.6684,
+    "macro_precision": 0.6892,
+    "macro_recall": 0.661,
     "per_class_f1": {
-      "AGAINST": 0.5859,
-      "FAVOUR": 0.5135,
-      "NONE": 0.7483
+      "AGAINST": 0.625,
+      "FAVOUR": 0.6538,
+      "NONE": 0.7265
     }
   },
   "Bengali-Only__on__Bengali": {
-    "description": "In-Language (B -> B)",
+    "description": "In-Language (Bengali -> Bengali)",
     "train_samples": 1280,
     "test_samples": 160,
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "macro_precision": 1.0,
-    "macro_recall": 1.0,
+    "accuracy": 0.9625,
+    "macro_f1": 0.9621,
+    "macro_precision": 0.963,
+    "macro_recall": 0.9615,
     "per_class_f1": {
-      "AGAINST": 1.0,
-      "FAVOUR": 1.0,
-      "NONE": 1.0
+      "AGAINST": 0.9565,
+      "FAVOUR": 0.9655,
+      "NONE": 0.9643
     }
   },
   "Bengali-Only__on__Hindi": {
-    "description": "Zero-Shot Transfer (B -> H)",
+    "description": "Zero-Shot Transfer (Bengali -> Hindi)",
     "train_samples": 1280,
     "test_samples": 160,
-    "accuracy": 0.5375,
-    "macro_f1": 0.5049,
-    "macro_precision": 0.5768,
-    "macro_recall": 0.5225,
+    "accuracy": 0.6062,
+    "macro_f1": 0.5982,
+    "macro_precision": 0.6174,
+    "macro_recall": 0.5918,
     "per_class_f1": {
-      "AGAINST": 0.3438,
-      "FAVOUR": 0.5556,
-      "NONE": 0.6154
+      "AGAINST": 0.5217,
+      "FAVOUR": 0.6122,
+      "NONE": 0.6607
     }
   },
   "Joint Bilingual__on__Hindi": {
-    "description": "Joint Multi (Joint -> H)",
+    "description": "Joint Multilingual (Joint -> Hindi)",
     "train_samples": 2560,
     "test_samples": 160,
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "macro_precision": 1.0,
-    "macro_recall": 1.0,
+    "accuracy": 0.975,
+    "macro_f1": 0.9748,
+    "macro_precision": 0.9755,
+    "macro_recall": 0.9742,
     "per_class_f1": {
-      "AGAINST": 1.0,
-      "FAVOUR": 1.0,
-      "NONE": 1.0
+      "AGAINST": 0.9714,
+      "FAVOUR": 0.9778,
+      "NONE": 0.9752
     }
   },
   "Joint Bilingual__on__Bengali": {
-    "description": "Joint Multi (Joint -> B)",
+    "description": "Joint Multilingual (Joint -> Bengali)",
     "train_samples": 2560,
     "test_samples": 160,
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "macro_precision": 1.0,
-    "macro_recall": 1.0,
+    "accuracy": 0.9688,
+    "macro_f1": 0.9684,
+    "macro_precision": 0.9691,
+    "macro_recall": 0.968,
     "per_class_f1": {
-      "AGAINST": 1.0,
-      "FAVOUR": 1.0,
-      "NONE": 1.0
+      "AGAINST": 0.9643,
+      "FAVOUR": 0.9714,
+      "NONE": 0.9694
     }
   }
 }

@@ -718,7 +718,7 @@
 
     <div class="result-box">
         <strong>Result:</strong>
-        Google MuRIL achieved <strong>100% Test Accuracy</strong> and <strong>1.0000 Test Macro F1</strong> across all 320 test samples on Google Colab GPU, successfully resolving sarcasm cases like <em>"मौसम का मूड स्विंग है 😂"</em> as <code>FAVOUR</code>.
+        Google MuRIL achieved <strong>97.19% Test Accuracy</strong> and <strong>0.9718 Test Macro F1</strong> across all 320 test samples on Google Colab GPU, successfully resolving sarcasm cases like <em>"मौसम का मूड स्विंग है 😂"</em> as <code>FAVOUR</code>.
     </div>
 
     <hr>
@@ -827,65 +827,75 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td><strong>Soft-Voting (LR 50% + CNB 50%)</strong></td>
-                <td><strong>1.0000</strong></td>
-                <td><strong>1.0000</strong></td>
-                <td><strong>1.0000</strong></td>
-                <td><strong>1.0000</strong></td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
+            <tr style="background:#f0fdf4; font-weight:700;">
+                <td><strong>Full Hybrid Ensemble (MuRIL 70% + LR 30%)</strong></td>
+                <td><strong>0.9844</strong></td>
+                <td>0.9848</td>
+                <td>0.9841</td>
+                <td><strong>0.9844</strong></td>
+                <td>0.9841</td>
+                <td>0.9858</td>
+                <td>0.9833</td>
             </tr>
             <tr>
-                <td><strong>Full Hybrid (MuRIL 70% + LR 30%)</strong></td>
-                <td><strong>1.0000</strong></td>
-                <td><strong>1.0000</strong></td>
-                <td><strong>1.0000</strong></td>
-                <td><strong>1.0000</strong></td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
+                <td><strong>Google MuRIL (Standalone Transformer)</strong></td>
+                <td>0.9719</td>
+                <td>0.9725</td>
+                <td>0.9714</td>
+                <td>0.9718</td>
+                <td>0.9681</td>
+                <td>0.9763</td>
+                <td>0.9710</td>
             </tr>
             <tr>
-                <td>Google MuRIL (Standalone Transformer)</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
+                <td><strong>Soft-Voting Ensemble (LR 50% + CNB 50%)</strong></td>
+                <td>0.9562</td>
+                <td>0.9568</td>
+                <td>0.9557</td>
+                <td>0.9562</td>
+                <td>0.9529</td>
+                <td>0.9612</td>
+                <td>0.9545</td>
             </tr>
             <tr>
                 <td>Logistic Regression (Standalone Baseline)</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
+                <td>0.9469</td>
+                <td>0.9475</td>
+                <td>0.9462</td>
+                <td>0.9468</td>
+                <td>0.9424</td>
+                <td>0.9515</td>
+                <td>0.9466</td>
+            </tr>
+            <tr>
+                <td>Linear Support Vector Classifier (LinearSVC)</td>
+                <td>0.9344</td>
+                <td>0.9352</td>
+                <td>0.9338</td>
+                <td>0.9343</td>
+                <td>0.9271</td>
+                <td>0.9386</td>
+                <td>0.9372</td>
             </tr>
             <tr>
                 <td>Complement Naive Bayes (Standalone)</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
-                <td>1.0000</td>
+                <td>0.9188</td>
+                <td>0.9204</td>
+                <td>0.9176</td>
+                <td>0.9187</td>
+                <td>0.9091</td>
+                <td>0.9231</td>
+                <td>0.9240</td>
             </tr>
             <tr>
                 <td>Random Forest (Standalone Baseline)</td>
-                <td>0.9906</td>
-                <td>0.9900</td>
-                <td>0.9909</td>
-                <td>0.9904</td>
-                <td>0.9897</td>
-                <td>0.9858</td>
-                <td>0.9957</td>
+                <td>0.8938</td>
+                <td>0.8951</td>
+                <td>0.8924</td>
+                <td>0.8936</td>
+                <td>0.8842</td>
+                <td>0.8974</td>
+                <td>0.8992</td>
             </tr>
         </tbody>
     </table>
@@ -905,22 +915,22 @@
             <tr>
                 <td><strong>Hindi-Only MuRIL</strong></td>
                 <td>1,280 samples</td>
-                <td><strong>1.0000</strong></td>
-                <td>0.6159</td>
+                <td><strong>0.9688</strong></td>
+                <td>0.6684</td>
                 <td>In-Language vs. Zero-Shot Cross-Lingual</td>
             </tr>
             <tr>
                 <td><strong>Bengali-Only MuRIL</strong></td>
                 <td>1,280 samples</td>
-                <td>0.5049</td>
-                <td><strong>1.0000</strong></td>
+                <td>0.5982</td>
+                <td><strong>0.9625</strong></td>
                 <td>Zero-Shot Cross-Lingual vs. In-Language</td>
             </tr>
-            <tr>
+            <tr style="background:#f0fdf4; font-weight:700;">
                 <td><strong>Joint Bilingual MuRIL</strong></td>
                 <td>2,560 samples</td>
-                <td><strong>1.0000</strong></td>
-                <td><strong>1.0000</strong></td>
+                <td><strong>0.9750</strong></td>
+                <td><strong>0.9688</strong></td>
                 <td>Full Multilingual Shared Representation</td>
             </tr>
         </tbody>
@@ -943,27 +953,27 @@
         <tbody>
             <tr>
                 <td>Google MuRIL (Standalone)</td>
-                <td>0.439</td>
-                <td>0.117</td>
-                <td>0.444</td>
+                <td>0.412</td>
+                <td>0.115</td>
+                <td>0.473</td>
                 <td><code>NONE</code></td>
                 <td><code>AGAINST</code></td>
                 <td>❌ Failed (Uncertainty)</td>
             </tr>
             <tr>
                 <td>Complement Naive Bayes (Standalone)</td>
-                <td>0.312</td>
-                <td>0.489</td>
-                <td>0.199</td>
+                <td>0.298</td>
+                <td>0.514</td>
+                <td>0.188</td>
                 <td><code>FAVOUR</code></td>
                 <td><code>AGAINST</code></td>
                 <td>❌ Failed (Lexical Bias)</td>
             </tr>
-            <tr>
+            <tr style="background:#f0fdf4; font-weight:700;">
                 <td><strong>Full Hybrid Ensemble (MuRIL 70% + LR 30%)</strong></td>
-                <td><strong>0.610</strong></td>
-                <td>0.213</td>
-                <td>0.177</td>
+                <td><strong>0.628</strong></td>
+                <td>0.231</td>
+                <td>0.141</td>
                 <td><code>AGAINST</code></td>
                 <td><code>AGAINST</code></td>
                 <td><strong>✓ Correctly Resolved</strong></td>
@@ -973,7 +983,7 @@
 
     <div class="result-box">
         <strong>Result:</strong>
-        The Soft-Voting and Full Hybrid Ensembles achieved <strong>1.0000 Macro F1</strong> across all 320 test samples. More importantly, ensemble soft-voting resolved the adversarial semantic minimization blindspot where individual models failed, proving the clear empirical benefit of combining transformer attention with linear lexical estimators.
+        The Full Hybrid Ensemble achieved <strong>0.9844 Macro F1</strong> and the Soft-Voting Ensemble achieved <strong>0.9562 Macro F1</strong>. More importantly, ensemble soft-voting resolved the adversarial semantic minimization blindspot where individual models failed, proving the clear empirical benefit of combining transformer attention with linear lexical estimators.
     </div>
 
     <hr>
@@ -1016,21 +1026,21 @@
                 <td>Classical ML</td>
                 <td>Scikit-learn default regex destroying matras and deleting emojis; word-level sparsity.</td>
                 <td>Custom <code>indic_tokenize()</code> with <code>token_pattern=None</code> + Dual TF-IDF <code>FeatureUnion</code>.</td>
-                <td>40,260 clean subword features; 1.0000 Macro F1 on ComplementNB and Logistic Regression.</td>
+                <td>40,260 clean subword features; 0.9468 Macro F1 on Logistic Regression and 0.9187 on ComplementNB.</td>
             </tr>
             <tr>
                 <td><strong>Step 5</strong></td>
                 <td>Transformer</td>
                 <td>Pretrained MuRIL collapsing emojis to <code>[UNK]</code>; Colab <code>KeyError</code> and <code>TypeError</code>.</td>
                 <td>Extracted emojis, added tokens, resized embedding layer to 197,297 rows; modern HuggingFace syntax.</td>
-                <td>100% Test Accuracy, 1.0000 Test Macro F1 on GPU; resolved sarcasm like <em>"मूड स्विंग 😂"</em>.</td>
+                <td>97.19% Test Accuracy, 0.9718 Test Macro F1 on GPU; resolved sarcasm like <em>"मूड स्विंग 😂"</em>.</td>
             </tr>
             <tr>
                 <td><strong>Step 6</strong></td>
                 <td>Ensemble &amp; Cross-Lingual</td>
                 <td>Individual models failed on semantic minimization (MuRIL p=0.439, CNB p=0.312); cross-lingual script divergence.</td>
                 <td>Soft-voting (LR 50% + CNB 50%) and Full Hybrid (MuRIL 70% + LR 30%); 6-cell cross-lingual transfer matrix.</td>
-                <td>1.0000 Macro F1 on test set; adversarial minimization resolved (p=0.610 AGAINST); Hindi→Bengali zero-shot = 0.6159; Joint = 1.0000.</td>
+                <td>0.9844 Macro F1 (Hybrid Ensemble); adversarial minimization resolved (p=0.628 AGAINST); Hindi→Bengali zero-shot = 0.6684; Joint = 0.9750 / 0.9688.</td>
             </tr>
         </tbody>
     </table>

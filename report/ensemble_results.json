@@ -1,60 +1,64 @@
 {
-  "model": "Soft-Voting Ensemble (LogisticRegression + ComplementNB)",
+  "model": "Soft-Voting Ensemble (LogisticRegression 50% + ComplementNB 50%)",
   "weights": {
     "LogisticRegression": 0.5,
     "ComplementNB": 0.5
   },
   "validation": {
-    "macro_f1": 0.9967
+    "accuracy": 0.9531,
+    "macro_f1": 0.9528
   },
   "test": {
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "macro_precision": 1.0,
-    "macro_recall": 1.0,
+    "accuracy": 0.9562,
+    "macro_f1": 0.9562,
+    "macro_precision": 0.9568,
+    "macro_recall": 0.9557,
     "per_class_f1": {
-      "AGAINST": 1.0,
-      "FAVOUR": 1.0,
-      "NONE": 1.0
+      "AGAINST": 0.9529,
+      "FAVOUR": 0.9612,
+      "NONE": 0.9545
     }
   },
   "language_breakdown": {
     "Hindi": {
       "samples": 160,
-      "accuracy": 1.0,
-      "macro_f1": 1.0,
-      "per_class_f1": {
-        "AGAINST": 1.0,
-        "FAVOUR": 1.0,
-        "NONE": 1.0
-      }
+      "accuracy": 0.9625,
+      "macro_f1": 0.9598
     },
     "Bengali": {
       "samples": 160,
-      "accuracy": 1.0,
-      "macro_f1": 1.0,
-      "per_class_f1": {
-        "AGAINST": 1.0,
-        "FAVOUR": 1.0,
-        "NONE": 1.0
-      }
+      "accuracy": 0.95,
+      "macro_f1": 0.9526
     }
   },
-  "confusion_matrix": [
-    [
-      96,
-      0,
-      0
-    ],
-    [
-      0,
-      106,
-      0
-    ],
-    [
-      0,
-      0,
-      118
-    ]
-  ]
+  "hybrid_muril_lr": {
+    "model": "Full Hybrid Ensemble (MuRIL 70% + LogisticRegression 30%)",
+    "validation": {
+      "accuracy": 0.9812,
+      "macro_f1": 0.981
+    },
+    "test": {
+      "accuracy": 0.9844,
+      "macro_f1": 0.9844,
+      "macro_precision": 0.9848,
+      "macro_recall": 0.9841,
+      "per_class_f1": {
+        "AGAINST": 0.9841,
+        "FAVOUR": 0.9858,
+        "NONE": 0.9833
+      }
+    },
+    "language_breakdown": {
+      "Hindi": {
+        "samples": 160,
+        "accuracy": 0.9875,
+        "macro_f1": 0.9875
+      },
+      "Bengali": {
+        "samples": 160,
+        "accuracy": 0.9812,
+        "macro_f1": 0.9812
+      }
+    }
+  }
 }

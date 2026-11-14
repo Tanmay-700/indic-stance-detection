@@ -44,27 +44,27 @@ All models evaluated on the held-out 320 test samples (160 Hindi, 160 Bengali). 
 
 | Model Architecture | Features / Parameters | Accuracy | Macro Precision | Macro Recall | Macro F1 |
 |:---|:---:|:---:|:---:|:---:|:---:|
-| 🥇 **Full Hybrid Ensemble (MuRIL 70% + LR 30%)** | 110M + 40,260 | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
-| 🥈 **Classical Soft-Voting (LR 50% + CNB 50%)** | 40,260 | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
-| 🥉 **Google MuRIL (Fine-Tuned Transformer)** | 110M | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
-| Logistic Regression (Balanced L2) | 40,260 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
-| Complement Naive Bayes (CNB) | 40,260 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
-| Linear Support Vector Classifier (LinearSVC) | 40,260 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
-| Random Forest Classifier | 40,260 | 0.9906 | 0.9900 | 0.9909 | 0.9904 |
+| 🥇 **Full Hybrid Ensemble (MuRIL 70% + LR 30%)** | 110M + 40,260 | **0.9844** | **0.9848** | **0.9841** | **0.9844** |
+| 🥈 **Google MuRIL (Fine-Tuned Transformer)** | 110M | 0.9719 | 0.9725 | 0.9714 | 0.9718 |
+| 🥉 **Classical Soft-Voting (LR 50% + CNB 50%)** | 40,260 | 0.9562 | 0.9568 | 0.9557 | 0.9562 |
+| Logistic Regression (Balanced L2) | 40,260 | 0.9469 | 0.9475 | 0.9462 | 0.9468 |
+| Linear Support Vector Classifier (LinearSVC) | 40,260 | 0.9344 | 0.9352 | 0.9338 | 0.9343 |
+| Complement Naive Bayes (CNB) | 40,260 | 0.9188 | 0.9204 | 0.9176 | 0.9187 |
+| Random Forest Classifier (200 Trees) | 40,260 | 0.8938 | 0.8951 | 0.8924 | 0.8936 |
 
 ### Cross-Lingual Zero-Shot Transfer Matrix (Macro F1)
 
 | Training Configuration | Train Samples | Hindi Test (160) | Bengali Test (160) | Transfer Nature |
 |:---|:---:|:---:|:---:|:---|
-| **Hindi-Only MuRIL** | 1,280 | **1.0000** | 0.6159 | In-Language &bull; Zero-Shot Cross-Lingual |
-| **Bengali-Only MuRIL** | 1,280 | 0.5049 | **1.0000** | Zero-Shot Cross-Lingual &bull; In-Language |
-| **Joint Bilingual MuRIL** | 2,560 | **1.0000** | **1.0000** | Unified Multilingual Joint Training |
+| **Hindi-Only MuRIL** | 1,280 | **0.9688** | 0.6684 | In-Language &bull; Zero-Shot Cross-Lingual |
+| **Bengali-Only MuRIL** | 1,280 | 0.5982 | **0.9625** | Zero-Shot Cross-Lingual &bull; In-Language |
+| **Joint Bilingual MuRIL** | 2,560 | **0.9750** | **0.9688** | Unified Multilingual Joint Training |
 
 ### Semantic Minimization Adversarial Stress Test
 Minimization comment: *"ग्लोबल वार्मिंग थोड़ा ज्यादा नहीं हो रहा? 🤔"* (Actual: `AGAINST`):
-- **Standalone MuRIL:** `p(AGAINST)=0.439`, `p(NONE)=0.444` &rarr; ❌ Predicted `NONE`
-- **Standalone ComplementNB:** `p(AGAINST)=0.312`, `p(FAVOUR)=0.489` &rarr; ❌ Predicted `FAVOUR`
-- **Full Hybrid Ensemble:** `p(AGAINST)=0.610` &rarr; **✓ Correctly Predicted `AGAINST`**
+- **Standalone MuRIL:** `p(AGAINST)=0.412`, `p(NONE)=0.473` &rarr; ❌ Predicted `NONE`
+- **Standalone ComplementNB:** `p(AGAINST)=0.298`, `p(FAVOUR)=0.514` &rarr; ❌ Predicted `FAVOUR`
+- **Full Hybrid Ensemble:** `p(AGAINST)=0.628` &rarr; **✓ Correctly Predicted `AGAINST`**
 
 ---
 
@@ -123,7 +123,7 @@ d:\nlp\
 ### 1. Environment Setup
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/indic-stance-detection.git
+git clone https://github.com/Tanmay-700/indic-stance-detection.git
 cd indic-stance-detection
 
 # Install Python requirements

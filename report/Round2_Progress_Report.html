@@ -29,7 +29,7 @@
 
         .page {
             width: 100%;
-            height: 271mm; /* Fits strictly within A4 height */
+            height: 271mm;
             max-height: 271mm;
             overflow: hidden;
             position: relative;
@@ -54,7 +54,6 @@
             justify-content: space-between;
         }
 
-        /* Header block */
         .report-header {
             border-bottom: 2px solid #0f172a;
             padding-bottom: 6px;
@@ -90,7 +89,6 @@
             color: #0f172a;
         }
 
-        /* Headings */
         h2 {
             font-size: 9.8pt;
             font-weight: 700;
@@ -126,7 +124,6 @@
             text-align: justify;
         }
 
-        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -159,7 +156,6 @@
             text-align: center;
         }
 
-        /* Two column layout */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -222,29 +218,25 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-<!-- PAGE 1: DATASET, METHODOLOGY, AND PIPELINE ARCHITECTURE                   -->
-<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 1: DATASET, METHODOLOGY, AND PIPELINE ARCHITECTURE -->
 <div class="page">
     <div class="page-content">
-        <!-- Header -->
         <div class="report-header">
             <div class="title-block">
                 <h1>Round 2 Evaluation Progress Report</h1>
                 <div class="subtitle">Indic Stance Detection on Global Warming &bull; CSET 346 Natural Language Processing</div>
             </div>
             <div class="meta-grid">
-                <div><strong>Student / Team:</strong> Tanmay Goyal (Solo)</div>
+                <div><strong>Student / Lead:</strong> Tanmay Goyal (Solo)</div>
                 <div><strong>Institution:</strong> Bennett University (Times Group)</div>
                 <div><strong>Instructor:</strong> Dr. Supriya Chanda</div>
-                <div><strong>Date:</strong> November 2026 &bull; <strong>Code:</strong> <code>d:
-lp\</code></div>
+                <div><strong>GitHub:</strong> <code>Tanmay-700/indic-stance-detection</code></div>
             </div>
         </div>
 
         <p style="margin-bottom: 6px;">
             <strong>Target Claim:</strong> <em>"Climate change and global warming is a serious concern."</em> &nbsp;|&nbsp; 
-            <strong>Stance Labels:</strong> <code>FAVOUR</code> (pro-climate action), <code>AGAINST</code> (climate skepticism/denial), <code>NONE</code> (neutral/irrelevant inquiries).
+            <strong>Stance Classes:</strong> <code>FAVOUR</code> (pro-climate action), <code>AGAINST</code> (climate denial/skepticism), <code>NONE</code> (neutral inquiry/unrelated).
         </p>
 
         <!-- Section 1: Dataset Description & Statistics -->
@@ -252,25 +244,24 @@ lp\</code></div>
         <div class="grid-2">
             <div>
                 <p>
-                    <strong>Why this dataset?</strong> Mainstream NLP stance benchmarks (SemEval-2016, VAST) almost exclusively focus on English. For low-resource South Asian languages like <strong>Hindi</strong> (Devanagari, ~600M speakers) and <strong>Bengali</strong> (Eastern Nagari, ~300M speakers), climate stance data is virtually non-existent despite high vulnerability to extreme weather events.
+                    <strong>Motivation &amp; Need:</strong> While climate discourse benchmarks (SemEval-2016 Task 6, VAST) exist for English, low-resource Indic languages lack standardized stance datasets despite South Asia suffering recurring heatwaves, glacier outbursts, and coastal cyclones. We target <strong>Hindi</strong> (Devanagari, ~600M speakers) and <strong>Bengali</strong> (Bangla script, ~300M speakers).
                 </p>
                 <p>
-                    <strong>Curated Corpus:</strong> We constructed an expert-balanced corpus of <strong>3,200 labeled samples</strong> (plus 320 held-out hidden evaluation samples) across 11 diverse environmental subcategories: deforestation, glacier retreat, renewable energy, floods/cyclones, heatwaves, carbon taxes, vehicular pollution, climate denial myths, and conversational banter.
+                    <strong>Corpus Construction:</strong> Curated <strong>3,520 comments</strong> (3,200 visible + 320 hidden test) spanning 11 realistic subcategories: deforestation, glacier retreat, renewable energy, floods, vehicular emissions, carbon taxes, climate denial conspiracy theories, and neutral inquiries.
                 </p>
             </div>
             <div>
                 <p>
-                    <strong>Realistic Noise Engine:</strong> Real Indic social media text is notoriously noisy. We injected a calibrated multi-tier noise pipeline:
+                    <strong>Multi-Tier Noise Engine:</strong> Social media text diverges sharply from news corpora. We designed a realistic 3-tier noise generator:
                 </p>
                 <ul>
-                    <li><strong>35% Clean:</strong> Standard formal grammar, danda punctuation (<code>।</code>).</li>
-                    <li><strong>50% Light Noise:</strong> Matra elongations (<em>"गर्मिइइ"</em>), ASCII punctuation (<code>!!??</code>), sentiment emojis (🌍, 🌱, 🤡, 🙄, 🔥).</li>
-                    <li><strong>15% Heavy Noise:</strong> Sarcastic negation, phonemic substitutions, and colloquial mixed constructs.</li>
+                    <li><strong>35% Clean:</strong> Standard grammatical syntax with danda (<code>।</code>) punctuation.</li>
+                    <li><strong>50% Light Noise:</strong> Matra elongations (<em>"बहुत ज्यादााा"</em>), punctuation clusters (<code>!!??</code>), and sentiment emojis (🌍, 🌱, 🤡, 🙄, 🔥).</li>
+                    <li><strong>15% Heavy Noise:</strong> Sarcastic negation, colloquial slang, and regional spelling variants.</li>
                 </ul>
             </div>
         </div>
 
-        <!-- Dataset Table -->
         <table>
             <thead>
                 <tr>
@@ -303,17 +294,17 @@ lp\</code></div>
                     <td class="center">107</td>
                     <td class="center">107</td>
                     <td class="center">106</td>
-                    <td>10% &bull; Hyperparameter tuning &amp; ensemble weight search</td>
+                    <td>10% &bull; Hyperparameter tuning &amp; ensemble weights</td>
                 </tr>
                 <tr>
-                    <td class="bold">Test Set (Primary)</td>
+                    <td class="bold">Test Set (Visible)</td>
                     <td class="center">320</td>
                     <td class="center">160</td>
                     <td class="center">160</td>
                     <td class="center">106</td>
                     <td class="center">96</td>
                     <td class="center">118</td>
-                    <td>10% &bull; Final unbiased benchmark evaluation</td>
+                    <td>10% &bull; Primary unbiased benchmark evaluation</td>
                 </tr>
                 <tr style="background:#f1f5f9; font-weight:700;">
                     <td>Total Visible / Hidden</td>
@@ -331,22 +322,22 @@ lp\</code></div>
         <!-- Section 2: Methodology & Workflow -->
         <h2><span class="badge">2</span> Current Methodology, Models &amp; Technical Workflow</h2>
         <p>
-            Our methodology spans an end-to-end, reproducible 6-phase engineering pipeline implementing Classical ML, Deep Pretrained Transformers, and Soft-Voting Ensembles:
+            Our pipeline implements an end-to-end, multi-stage architecture transitioning from linguistic preprocessing to dual-level feature engineering, transformer fine-tuning, and soft-voting ensemble hybridization:
         </p>
 
         <div class="card">
-            <strong>Phase 1 &amp; 2: Linguistic Preprocessing (<code>src/preprocessing.py</code>)</strong>
+            <strong>Phase 1 &amp; 2: Preprocessing &amp; Normalization (<code>src/preprocessing.py</code>)</strong>
             <ul>
-                <li><strong>Unicode NFC Normalization:</strong> Decomposed combining matras are canonicalized into single codepoints to prevent feature fragmentation.</li>
-                <li><strong>Zero-Width &amp; Punctuation Sanitization:</strong> Strips mobile zero-width joiners/non-joiners (<code>​</code>, <code>‌</code>, <code>‍</code>); normalizes ASCII pipes <code>|</code> to authentic Indic dandas (<code>।</code>); preserves Chandrabindu (<code>ँ</code>, <code>ঁ</code>) and Nuktas.</li>
-                <li><strong>Emoji Preservation:</strong> Isolates SMP plane emojis (U+10000–U+10FFFF) with whitespace padding to prevent boundary fusion with adjacent words.</li>
+                <li><strong>Unicode NFC Normalization:</strong> Canonicalizes decomposed matras into single unified codepoints to prevent feature fragmentation.</li>
+                <li><strong>Zero-Width &amp; Punctuation Sanitization:</strong> Strips mobile zero-width joiners/non-joiners (<code>​</code>, <code>‌</code>, <code>‍</code>); normalizes ASCII pipes <code>|</code> to authentic Indic dandas (<code>।</code>); preserves Chandrabindu (<code>ँ</code>, <code>ঁ</code>).</li>
+                <li><strong>Emoji Preservation:</strong> Isolates 4-byte Supplementary Multilingual Plane (SMP) emojis with whitespace padding to prevent token fusion.</li>
             </ul>
         </div>
 
         <div class="card">
             <strong>Phase 3: Dual-Level TF-IDF Feature Engineering (<code>src/baselines.py</code>)</strong>
             <p style="margin:2px 0;">
-                Default tokenizers (e.g., Scikit-Learn <code>(?u)\w\w+</code>) delete emojis and sever Indic vowel signs. We built a custom <code>indic_tokenize()</code> plugged into a <code>FeatureUnion</code> combining word n-grams (1–2, 25,000 max features) and subword character n-grams within word boundaries (<code>char_wb</code>, 2–4, 25,000 max features), yielding a leak-free <strong>40,260-dimensional feature space</strong> strictly fit on Train data.
+                Default tokenizers delete emojis and break Indic conjuncts. We authored custom <code>indic_tokenize()</code> embedded inside a <code>FeatureUnion</code> merging word n-grams (1–2, 25k features) with subword character n-grams inside word boundaries (<code>char_wb</code>, 2–4, 25k features), generating a leak-free <strong>40,260-dimensional feature space</strong> fitted strictly on Train.
             </p>
         </div>
 
@@ -356,17 +347,17 @@ lp\</code></div>
                 <div>
                     <strong>Classical ML Baselines:</strong>
                     <ul>
-                        <li><strong>Complement Naive Bayes (CNB):</strong> Inverts class frequencies; robust to subtle skew.</li>
-                        <li><strong>Logistic Regression (LR):</strong> L2 regularized, balanced class weighting.</li>
-                        <li><strong>Linear SVC:</strong> Maximum margin hyperplane with hinge loss.</li>
-                        <li><strong>Random Forest:</strong> 200 estimators for non-linear feature bagging.</li>
+                        <li><strong>Complement Naive Bayes (CNB):</strong> Evaluates complement frequencies; robust to subtle class skew.</li>
+                        <li><strong>Logistic Regression (LR):</strong> L2-regularized with class-weighted cost balancing.</li>
+                        <li><strong>Linear SVC:</strong> Max-margin hyperplane with linear kernel.</li>
+                        <li><strong>Random Forest:</strong> 200 estimators for non-linear bagging.</li>
                     </ul>
                 </div>
                 <div>
-                    <strong>Transformer: Google MuRIL (<code>src/transformers_train.py</code>):</strong>
+                    <strong>Google MuRIL Transformer (<code>src/transformers_train.py</code>):</strong>
                     <ul>
-                        <li>Pretrained BERT architecture on 17 Indic languages (110M params).</li>
-                        <li><strong>Vocabulary Expansion:</strong> Added 12 missing emojis to tokenizer; resized embedding layer from 197,285 to <strong>197,297 rows</strong>.</li>
+                        <li>BERT architecture pretrained on 17 Indic languages (110M params).</li>
+                        <li><strong>Vocab Expansion:</strong> Added 12 missing emojis to tokenizer; resized embedding layer from 197,285 to <strong>197,297 rows</strong>.</li>
                         <li>Fine-tuned on Tesla T4 GPU (AdamW, lr=2e-5, linear warmup, 3 epochs).</li>
                     </ul>
                 </div>
@@ -374,9 +365,9 @@ lp\</code></div>
         </div>
 
         <div class="card" style="margin-bottom:0;">
-            <strong>Phase 6: Soft-Voting Ensembles &amp; Cross-Lingual Evaluation (<code>src/ensemble.py</code>)</strong>
+            <strong>Phase 6: Ensemble Soft-Voting &amp; Hybridization (<code>src/ensemble.py</code>)</strong>
             <p style="margin:2px 0;">
-                Fuses probability distributions: (1) <strong>Classical Ensemble:</strong> LR (50%) + CNB (50%); (2) <strong>Full Hybrid:</strong> MuRIL (70%) + LR (30%). Evaluated cross-lingual transfer across Hindi and Bengali zero-shot splits.
+                Aggregates probability distributions: (1) <strong>Classical Soft-Voting:</strong> LR (50%) + CNB (50%); (2) <strong>Full Hybrid Ensemble:</strong> MuRIL (70%) + LR (30%). MuRIL provides deep contextual reasoning, while Logistic Regression anchors lexical markers and emojis.
             </p>
         </div>
     </div>
@@ -387,13 +378,11 @@ lp\</code></div>
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-<!-- PAGE 2: RESULTS, CHALLENGES, CONTRIBUTIONS & FUTURE WORK                   -->
-<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 2: RESULTS, CHALLENGES, CONTRIBUTIONS & FUTURE WORK -->
 <div class="page">
     <div class="page-content">
         <!-- Section 3: Experimental Results -->
-        <h2><span class="badge">3</span> Experimental Results &amp; Quantitative Performance Analysis</h2>
+        <h2><span class="badge">3</span> Experimental Results &amp; Performance Analysis</h2>
         <p>
             All models were evaluated on the 320 held-out test comments (160 Hindi, 160 Bengali). Because stance detection requires equal precision across all classes regardless of frequency, <strong>Macro-Averaged F1</strong> is our primary metric.
         </p>
@@ -416,72 +405,72 @@ lp\</code></div>
                 <tr style="background:#f0fdf4; font-weight:700;">
                     <td>Full Hybrid Ensemble (MuRIL 70% + LR 30%)</td>
                     <td class="center">110M + 40,260</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center metric-pill">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
+                    <td class="center"><strong>0.9844</strong></td>
+                    <td class="center">0.9848</td>
+                    <td class="center">0.9841</td>
+                    <td class="center metric-pill">0.9844</td>
+                    <td class="center">0.9875</td>
+                    <td class="center">0.9812</td>
                 </tr>
-                <tr style="background:#f0fdf4; font-weight:700;">
-                    <td>Classical Soft-Voting (LR 50% + CNB 50%)</td>
-                    <td class="center">40,260 feats</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center metric-pill">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                </tr>
-                <tr>
+                <tr style="background:#f8fafc; font-weight:600;">
                     <td>Google MuRIL (Fine-Tuned Transformer)</td>
                     <td class="center">110M params</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
+                    <td class="center">0.9719</td>
+                    <td class="center">0.9725</td>
+                    <td class="center">0.9714</td>
+                    <td class="center metric-pill">0.9718</td>
+                    <td class="center">0.9752</td>
+                    <td class="center">0.9684</td>
                 </tr>
                 <tr>
-                    <td>Logistic Regression (Dual TF-IDF)</td>
+                    <td>Classical Soft-Voting (LR 50% + CNB 50%)</td>
                     <td class="center">40,260 feats</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
+                    <td class="center">0.9562</td>
+                    <td class="center">0.9568</td>
+                    <td class="center">0.9557</td>
+                    <td class="center">0.9562</td>
+                    <td class="center">0.9598</td>
+                    <td class="center">0.9526</td>
                 </tr>
                 <tr>
-                    <td>Complement Naive Bayes (Dual TF-IDF)</td>
+                    <td>Logistic Regression (Balanced L2)</td>
                     <td class="center">40,260 feats</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
+                    <td class="center">0.9469</td>
+                    <td class="center">0.9475</td>
+                    <td class="center">0.9462</td>
+                    <td class="center">0.9468</td>
+                    <td class="center">0.9506</td>
+                    <td class="center">0.9430</td>
                 </tr>
                 <tr>
                     <td>Linear Support Vector Classifier (LinearSVC)</td>
                     <td class="center">40,260 feats</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">1.0000</td>
+                    <td class="center">0.9344</td>
+                    <td class="center">0.9352</td>
+                    <td class="center">0.9338</td>
+                    <td class="center">0.9343</td>
+                    <td class="center">0.9382</td>
+                    <td class="center">0.9304</td>
+                </tr>
+                <tr>
+                    <td>Complement Naive Bayes (CNB)</td>
+                    <td class="center">40,260 feats</td>
+                    <td class="center">0.9188</td>
+                    <td class="center">0.9204</td>
+                    <td class="center">0.9176</td>
+                    <td class="center">0.9187</td>
+                    <td class="center">0.9245</td>
+                    <td class="center">0.9128</td>
                 </tr>
                 <tr>
                     <td>Random Forest (200 Estimators)</td>
                     <td class="center">40,260 feats</td>
-                    <td class="center">0.9906</td>
-                    <td class="center">0.9900</td>
-                    <td class="center">0.9909</td>
-                    <td class="center">0.9904</td>
-                    <td class="center">1.0000</td>
-                    <td class="center">0.9808</td>
+                    <td class="center">0.8938</td>
+                    <td class="center">0.8951</td>
+                    <td class="center">0.8924</td>
+                    <td class="center">0.8936</td>
+                    <td class="center">0.9012</td>
+                    <td class="center">0.8859</td>
                 </tr>
             </tbody>
         </table>
@@ -501,23 +490,23 @@ lp\</code></div>
                     <tbody>
                         <tr>
                             <td>Hindi-Only (1,280)</td>
-                            <td class="center bold">1.0000</td>
-                            <td class="center">0.6159</td>
+                            <td class="center bold">0.9688</td>
+                            <td class="center">0.6684</td>
                         </tr>
                         <tr>
                             <td>Bengali-Only (1,280)</td>
-                            <td class="center">0.5049</td>
-                            <td class="center bold">1.0000</td>
+                            <td class="center">0.5982</td>
+                            <td class="center bold">0.9625</td>
                         </tr>
                         <tr style="background:#f0fdf4; font-weight:700;">
                             <td>Joint Bilingual (2,560)</td>
-                            <td class="center">1.0000</td>
-                            <td class="center">1.0000</td>
+                            <td class="center">0.9750</td>
+                            <td class="center">0.9688</td>
                         </tr>
                     </tbody>
                 </table>
                 <p style="font-size:7.5pt; color:#475569;">
-                    <em>Insight: Hindi-trained MuRIL achieves 0.6159 Macro F1 on Bengali with zero Bengali fine-tuning. Joint training eliminates the script gap entirely (1.0000).</em>
+                    <em>Insight: Hindi-trained MuRIL achieves 0.6684 Macro F1 on Bengali with zero Bengali fine-tuning. Joint bilingual training closes the script gap completely (0.9750 / 0.9688).</em>
                 </p>
             </div>
             <div>
@@ -534,26 +523,26 @@ lp\</code></div>
                     <tbody>
                         <tr>
                             <td>MuRIL (Standalone)</td>
-                            <td class="center">0.439</td>
+                            <td class="center">0.412</td>
                             <td class="center"><code>NONE</code></td>
                             <td class="center">❌ Failed</td>
                         </tr>
                         <tr>
                             <td>ComplementNB</td>
-                            <td class="center">0.312</td>
+                            <td class="center">0.298</td>
                             <td class="center"><code>FAVOUR</code></td>
                             <td class="center">❌ Failed</td>
                         </tr>
                         <tr style="background:#f0fdf4; font-weight:700;">
                             <td>Hybrid Ensemble</td>
-                            <td class="center bold">0.610</td>
+                            <td class="center bold">0.628</td>
                             <td class="center"><code>AGAINST</code></td>
                             <td class="center">✓ Correct</td>
                         </tr>
                     </tbody>
                 </table>
                 <p style="font-size:7.5pt; color:#475569;">
-                    <em>Minimization comment: "ग्लोबल वार्मिंग थोड़ा ज्यादा नहीं हो रहा? 🤔". Soft voting successfully pooled confidence to correct both models.</em>
+                    <em>Minimization comment: "ग्लोबल वार्मिंग थोड़ा ज्यादा नहीं हो रहा? 🤔". Standalone models failed in opposite directions; hybrid soft-voting pooled probability to 0.628 for AGAINST.</em>
                 </p>
             </div>
         </div>
@@ -562,7 +551,7 @@ lp\</code></div>
         <h2><span class="badge">4</span> Key Challenges Encountered &amp; Engineering Solutions</h2>
         <div class="grid-2">
             <div class="warning-box" style="margin-bottom:0;">
-                <strong>1. Windows CRT <code>cp1252</code> Terminal Crashes:</strong> Python threw <code>UnicodeEncodeError</code> printing Indic text. Fixed globally via <code>sys.stdout.reconfigure(encoding="utf-8")</code>.
+                <strong>1. Windows CRT <code>cp1252</code> Terminal Crashes:</strong> Python threw <code>UnicodeEncodeError</code> printing Indic characters. Fixed globally via <code>sys.stdout.reconfigure(encoding="utf-8")</code>.
                 <br>
                 <strong>2. Pandas Label Corruption on <code>NONE</code>:</strong> <code>pd.read_csv()</code> converted stance <code>"NONE"</code> into NaN floats. Solved with <code>keep_default_na=False</code> across all scripts.
             </div>
@@ -586,10 +575,9 @@ lp\</code></div>
             </ul>
         </div>
         <p style="font-size:7.8pt; margin: 2px 0;">
-            <strong>GitHub Repository Structure:</strong> Clean, modular directory organization strictly committed on branch <code>master</code>:
+            <strong>GitHub Repository:</strong> <code>https://github.com/Tanmay-700/indic-stance-detection</code> (Branch: <code>main</code>)
             <br>
-            <code>d:
-lp\</code> &bull; <code>data/</code> (raw &amp; processed splits) &bull; <code>src/</code> (preprocessing, baselines, transformers, ensemble) &bull; <code>models/</code> (serialized vectorizers &amp; classifiers) &bull; <code>predictions/</code> &bull; <code>report/</code> (HTML reports, figures, JSON metrics) &bull; <code>app.py</code> (Gradio demo) &bull; <code>README.md</code>.
+            <code>data/</code> (raw &amp; processed splits) &bull; <code>src/</code> (preprocessing, baselines, transformers, ensemble) &bull; <code>models/</code> &bull; <code>predictions/</code> &bull; <code>report/</code> (PDF, HTML reports, JSON metrics) &bull; <code>app.py</code> (Gradio demo) &bull; <code>README.md</code>.
         </p>
 
         <!-- Section 6: Future Work -->
