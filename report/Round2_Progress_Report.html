@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Round 2 Progress Report: Indic Stance Detection on Global Warming</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        @page {
+            size: A4 portrait;
+            margin: 12mm 14mm 12mm 14mm;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 8.8pt;
+            line-height: 1.38;
+            color: #1e293b;
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page {
+            width: 100%;
+            height: 271mm; /* Fits strictly within A4 height */
+            max-height: 271mm;
+            overflow: hidden;
+            position: relative;
+            page-break-after: always;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .page-content {
+            flex: 1;
+        }
+
+        .page-footer {
+            border-top: 1px solid #cbd5e1;
+            padding-top: 4px;
+            font-size: 7.5pt;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Header block */
+        .report-header {
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .title-block h1 {
+            font-size: 14pt;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 2px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .title-block .subtitle {
+            font-size: 8.5pt;
+            font-weight: 600;
+            color: #0284c7;
+            margin: 0;
+        }
+
+        .meta-grid {
+            text-align: right;
+            font-size: 7.8pt;
+            color: #334155;
+            line-height: 1.35;
+        }
+
+        .meta-grid strong {
+            color: #0f172a;
+        }
+
+        /* Headings */
+        h2 {
+            font-size: 9.8pt;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 6px 0 3px 0;
+            padding-bottom: 2px;
+            border-bottom: 1.5px solid #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        h2 .badge {
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 7pt;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 4px 0 2px 0;
+        }
+
+        p {
+            margin: 0 0 4px 0;
+            text-align: justify;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 7.8pt;
+            margin: 4px 0 6px 0;
+        }
+
+        th, td {
+            padding: 3px 5px;
+            text-align: left;
+            border: 1px solid #cbd5e1;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 7.6pt;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        td.bold {
+            font-weight: 700;
+        }
+
+        td.center, th.center {
+            text-align: center;
+        }
+
+        /* Two column layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 5px 7px;
+            margin-bottom: 5px;
+        }
+
+        .highlight-box {
+            background: #f0fdf4;
+            border-left: 3px solid #16a34a;
+            padding: 4px 7px;
+            margin: 4px 0;
+            font-size: 8pt;
+        }
+
+        .warning-box {
+            background: #fef2f2;
+            border-left: 3px solid #dc2626;
+            padding: 4px 7px;
+            margin: 4px 0;
+            font-size: 8pt;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', Consolas, monospace;
+            font-size: 7.8pt;
+            background: #e2e8f0;
+            padding: 1px 3px;
+            border-radius: 2px;
+            color: #0f172a;
+        }
+
+        ul, ol {
+            margin: 0 0 4px 0;
+            padding-left: 15px;
+        }
+
+        li {
+            margin-bottom: 1.5px;
+        }
+
+        .metric-pill {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 700;
+            padding: 0 4px;
+            border-radius: 2px;
+            font-size: 7.5pt;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 1: DATASET, METHODOLOGY, AND PIPELINE ARCHITECTURE                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+    <div class="page-content">
+        <!-- Header -->
+        <div class="report-header">
+            <div class="title-block">
+                <h1>Round 2 Evaluation Progress Report</h1>
+                <div class="subtitle">Indic Stance Detection on Global Warming &bull; CSET 346 Natural Language Processing</div>
+            </div>
+            <div class="meta-grid">
+                <div><strong>Student / Team:</strong> Tanmay Goyal (Solo)</div>
+                <div><strong>Institution:</strong> Bennett University (Times Group)</div>
+                <div><strong>Instructor:</strong> Dr. Supriya Chanda</div>
+                <div><strong>Date:</strong> November 2026 &bull; <strong>Code:</strong> <code>d:
+lp\</code></div>
+            </div>
+        </div>
+
+        <p style="margin-bottom: 6px;">
+            <strong>Target Claim:</strong> <em>"Climate change and global warming is a serious concern."</em> &nbsp;|&nbsp; 
+            <strong>Stance Labels:</strong> <code>FAVOUR</code> (pro-climate action), <code>AGAINST</code> (climate skepticism/denial), <code>NONE</code> (neutral/irrelevant inquiries).
+        </p>
+
+        <!-- Section 1: Dataset Description & Statistics -->
+        <h2><span class="badge">1</span> Dataset Description, Curation &amp; Statistics</h2>
+        <div class="grid-2">
+            <div>
+                <p>
+                    <strong>Why this dataset?</strong> Mainstream NLP stance benchmarks (SemEval-2016, VAST) almost exclusively focus on English. For low-resource South Asian languages like <strong>Hindi</strong> (Devanagari, ~600M speakers) and <strong>Bengali</strong> (Eastern Nagari, ~300M speakers), climate stance data is virtually non-existent despite high vulnerability to extreme weather events.
+                </p>
+                <p>
+                    <strong>Curated Corpus:</strong> We constructed an expert-balanced corpus of <strong>3,200 labeled samples</strong> (plus 320 held-out hidden evaluation samples) across 11 diverse environmental subcategories: deforestation, glacier retreat, renewable energy, floods/cyclones, heatwaves, carbon taxes, vehicular pollution, climate denial myths, and conversational banter.
+                </p>
+            </div>
+            <div>
+                <p>
+                    <strong>Realistic Noise Engine:</strong> Real Indic social media text is notoriously noisy. We injected a calibrated multi-tier noise pipeline:
+                </p>
+                <ul>
+                    <li><strong>35% Clean:</strong> Standard formal grammar, danda punctuation (<code>।</code>).</li>
+                    <li><strong>50% Light Noise:</strong> Matra elongations (<em>"गर्मिइइ"</em>), ASCII punctuation (<code>!!??</code>), sentiment emojis (🌍, 🌱, 🤡, 🙄, 🔥).</li>
+                    <li><strong>15% Heavy Noise:</strong> Sarcastic negation, phonemic substitutions, and colloquial mixed constructs.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Dataset Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Split Partition</th>
+                    <th class="center">Total Samples</th>
+                    <th class="center">Hindi (Devanagari)</th>
+                    <th class="center">Bengali (Bangla)</th>
+                    <th class="center">FAVOUR</th>
+                    <th class="center">AGAINST</th>
+                    <th class="center">NONE</th>
+                    <th>Split Ratio &amp; Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="bold">Training Set</td>
+                    <td class="center">2,560</td>
+                    <td class="center">1,280</td>
+                    <td class="center">1,280</td>
+                    <td class="center">854</td>
+                    <td class="center">853</td>
+                    <td class="center">853</td>
+                    <td>80% &bull; Parameter estimation &amp; vocabulary fitting</td>
+                </tr>
+                <tr>
+                    <td class="bold">Validation Set</td>
+                    <td class="center">320</td>
+                    <td class="center">160</td>
+                    <td class="center">160</td>
+                    <td class="center">107</td>
+                    <td class="center">107</td>
+                    <td class="center">106</td>
+                    <td>10% &bull; Hyperparameter tuning &amp; ensemble weight search</td>
+                </tr>
+                <tr>
+                    <td class="bold">Test Set (Primary)</td>
+                    <td class="center">320</td>
+                    <td class="center">160</td>
+                    <td class="center">160</td>
+                    <td class="center">106</td>
+                    <td class="center">96</td>
+                    <td class="center">118</td>
+                    <td>10% &bull; Final unbiased benchmark evaluation</td>
+                </tr>
+                <tr style="background:#f1f5f9; font-weight:700;">
+                    <td>Total Visible / Hidden</td>
+                    <td class="center">3,200 / 320</td>
+                    <td class="center">1,600 / 160</td>
+                    <td class="center">1,600 / 160</td>
+                    <td class="center">1,067</td>
+                    <td class="center">1,056</td>
+                    <td class="center">1,077</td>
+                    <td>Balanced 3-class distribution across both languages</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Section 2: Methodology & Workflow -->
+        <h2><span class="badge">2</span> Current Methodology, Models &amp; Technical Workflow</h2>
+        <p>
+            Our methodology spans an end-to-end, reproducible 6-phase engineering pipeline implementing Classical ML, Deep Pretrained Transformers, and Soft-Voting Ensembles:
+        </p>
+
+        <div class="card">
+            <strong>Phase 1 &amp; 2: Linguistic Preprocessing (<code>src/preprocessing.py</code>)</strong>
+            <ul>
+                <li><strong>Unicode NFC Normalization:</strong> Decomposed combining matras are canonicalized into single codepoints to prevent feature fragmentation.</li>
+                <li><strong>Zero-Width &amp; Punctuation Sanitization:</strong> Strips mobile zero-width joiners/non-joiners (<code>​</code>, <code>‌</code>, <code>‍</code>); normalizes ASCII pipes <code>|</code> to authentic Indic dandas (<code>।</code>); preserves Chandrabindu (<code>ँ</code>, <code>ঁ</code>) and Nuktas.</li>
+                <li><strong>Emoji Preservation:</strong> Isolates SMP plane emojis (U+10000–U+10FFFF) with whitespace padding to prevent boundary fusion with adjacent words.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <strong>Phase 3: Dual-Level TF-IDF Feature Engineering (<code>src/baselines.py</code>)</strong>
+            <p style="margin:2px 0;">
+                Default tokenizers (e.g., Scikit-Learn <code>(?u)\w\w+</code>) delete emojis and sever Indic vowel signs. We built a custom <code>indic_tokenize()</code> plugged into a <code>FeatureUnion</code> combining word n-grams (1–2, 25,000 max features) and subword character n-grams within word boundaries (<code>char_wb</code>, 2–4, 25,000 max features), yielding a leak-free <strong>40,260-dimensional feature space</strong> strictly fit on Train data.
+            </p>
+        </div>
+
+        <div class="card">
+            <strong>Phase 4 &amp; 5: Model Zoo — Classical Baselines &amp; Google MuRIL Transformer</strong>
+            <div class="grid-2" style="margin-bottom:0;">
+                <div>
+                    <strong>Classical ML Baselines:</strong>
+                    <ul>
+                        <li><strong>Complement Naive Bayes (CNB):</strong> Inverts class frequencies; robust to subtle skew.</li>
+                        <li><strong>Logistic Regression (LR):</strong> L2 regularized, balanced class weighting.</li>
+                        <li><strong>Linear SVC:</strong> Maximum margin hyperplane with hinge loss.</li>
+                        <li><strong>Random Forest:</strong> 200 estimators for non-linear feature bagging.</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Transformer: Google MuRIL (<code>src/transformers_train.py</code>):</strong>
+                    <ul>
+                        <li>Pretrained BERT architecture on 17 Indic languages (110M params).</li>
+                        <li><strong>Vocabulary Expansion:</strong> Added 12 missing emojis to tokenizer; resized embedding layer from 197,285 to <strong>197,297 rows</strong>.</li>
+                        <li>Fine-tuned on Tesla T4 GPU (AdamW, lr=2e-5, linear warmup, 3 epochs).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+            <strong>Phase 6: Soft-Voting Ensembles &amp; Cross-Lingual Evaluation (<code>src/ensemble.py</code>)</strong>
+            <p style="margin:2px 0;">
+                Fuses probability distributions: (1) <strong>Classical Ensemble:</strong> LR (50%) + CNB (50%); (2) <strong>Full Hybrid:</strong> MuRIL (70%) + LR (30%). Evaluated cross-lingual transfer across Hindi and Bengali zero-shot splits.
+            </p>
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>CSET 346 Natural Language Processing &bull; Round 2 Progress Report</span>
+        <span>Page 1 of 2 &bull; Dataset &amp; Methodology</span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 2: RESULTS, CHALLENGES, CONTRIBUTIONS & FUTURE WORK                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+    <div class="page-content">
+        <!-- Section 3: Experimental Results -->
+        <h2><span class="badge">3</span> Experimental Results &amp; Quantitative Performance Analysis</h2>
+        <p>
+            All models were evaluated on the 320 held-out test comments (160 Hindi, 160 Bengali). Because stance detection requires equal precision across all classes regardless of frequency, <strong>Macro-Averaged F1</strong> is our primary metric.
+        </p>
+
+        <!-- Master Performance Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Model Architecture</th>
+                    <th class="center">Parameters / Features</th>
+                    <th class="center">Accuracy</th>
+                    <th class="center">Macro Precision</th>
+                    <th class="center">Macro Recall</th>
+                    <th class="center">Macro F1</th>
+                    <th class="center">Hindi F1</th>
+                    <th class="center">Bengali F1</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background:#f0fdf4; font-weight:700;">
+                    <td>Full Hybrid Ensemble (MuRIL 70% + LR 30%)</td>
+                    <td class="center">110M + 40,260</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center metric-pill">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                </tr>
+                <tr style="background:#f0fdf4; font-weight:700;">
+                    <td>Classical Soft-Voting (LR 50% + CNB 50%)</td>
+                    <td class="center">40,260 feats</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center metric-pill">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                </tr>
+                <tr>
+                    <td>Google MuRIL (Fine-Tuned Transformer)</td>
+                    <td class="center">110M params</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                </tr>
+                <tr>
+                    <td>Logistic Regression (Dual TF-IDF)</td>
+                    <td class="center">40,260 feats</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                </tr>
+                <tr>
+                    <td>Complement Naive Bayes (Dual TF-IDF)</td>
+                    <td class="center">40,260 feats</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                </tr>
+                <tr>
+                    <td>Linear Support Vector Classifier (LinearSVC)</td>
+                    <td class="center">40,260 feats</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">1.0000</td>
+                </tr>
+                <tr>
+                    <td>Random Forest (200 Estimators)</td>
+                    <td class="center">40,260 feats</td>
+                    <td class="center">0.9906</td>
+                    <td class="center">0.9900</td>
+                    <td class="center">0.9909</td>
+                    <td class="center">0.9904</td>
+                    <td class="center">1.0000</td>
+                    <td class="center">0.9808</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Cross-Lingual & Stress Test in Grid -->
+        <div class="grid-2">
+            <div>
+                <h3>Cross-Lingual Zero-Shot Transfer Matrix</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Training Set</th>
+                            <th class="center">Hindi Test</th>
+                            <th class="center">Bengali Test</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Hindi-Only (1,280)</td>
+                            <td class="center bold">1.0000</td>
+                            <td class="center">0.6159</td>
+                        </tr>
+                        <tr>
+                            <td>Bengali-Only (1,280)</td>
+                            <td class="center">0.5049</td>
+                            <td class="center bold">1.0000</td>
+                        </tr>
+                        <tr style="background:#f0fdf4; font-weight:700;">
+                            <td>Joint Bilingual (2,560)</td>
+                            <td class="center">1.0000</td>
+                            <td class="center">1.0000</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size:7.5pt; color:#475569;">
+                    <em>Insight: Hindi-trained MuRIL achieves 0.6159 Macro F1 on Bengali with zero Bengali fine-tuning. Joint training eliminates the script gap entirely (1.0000).</em>
+                </p>
+            </div>
+            <div>
+                <h3>Semantic Minimization Stress Test</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th class="center">p(AGAINST)</th>
+                            <th class="center">Prediction</th>
+                            <th class="center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>MuRIL (Standalone)</td>
+                            <td class="center">0.439</td>
+                            <td class="center"><code>NONE</code></td>
+                            <td class="center">❌ Failed</td>
+                        </tr>
+                        <tr>
+                            <td>ComplementNB</td>
+                            <td class="center">0.312</td>
+                            <td class="center"><code>FAVOUR</code></td>
+                            <td class="center">❌ Failed</td>
+                        </tr>
+                        <tr style="background:#f0fdf4; font-weight:700;">
+                            <td>Hybrid Ensemble</td>
+                            <td class="center bold">0.610</td>
+                            <td class="center"><code>AGAINST</code></td>
+                            <td class="center">✓ Correct</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size:7.5pt; color:#475569;">
+                    <em>Minimization comment: "ग्लोबल वार्मिंग थोड़ा ज्यादा नहीं हो रहा? 🤔". Soft voting successfully pooled confidence to correct both models.</em>
+                </p>
+            </div>
+        </div>
+
+        <!-- Section 4: Challenges Encountered -->
+        <h2><span class="badge">4</span> Key Challenges Encountered &amp; Engineering Solutions</h2>
+        <div class="grid-2">
+            <div class="warning-box" style="margin-bottom:0;">
+                <strong>1. Windows CRT <code>cp1252</code> Terminal Crashes:</strong> Python threw <code>UnicodeEncodeError</code> printing Indic text. Fixed globally via <code>sys.stdout.reconfigure(encoding="utf-8")</code>.
+                <br>
+                <strong>2. Pandas Label Corruption on <code>NONE</code>:</strong> <code>pd.read_csv()</code> converted stance <code>"NONE"</code> into NaN floats. Solved with <code>keep_default_na=False</code> across all scripts.
+            </div>
+            <div class="warning-box" style="margin-bottom:0;">
+                <strong>3. Pretrained MuRIL Emoji Vocabulary Collapse:</strong> Base MuRIL lacked social emojis, collapsing them into <code>[UNK]</code>. We expanded the vocabulary (+12 tokens) and resized the embedding table to 197,297 rows.
+                <br>
+                <strong>4. Scikit-Learn Regex Stripping Matras:</strong> Default word regex broke Indic conjuncts. Solved via custom regex with <code>token_pattern=None</code>.
+            </div>
+        </div>
+
+        <!-- Section 5: Individual Contributions & GitHub Repo -->
+        <h2><span class="badge">5</span> Individual Contributions &amp; GitHub Repository Organization</h2>
+        <div class="card" style="margin-bottom:4px;">
+            <p>
+                <strong>Tanmay Goyal (Solo Project Lead):</strong> Conceptualized, designed, and executed all 6 project phases end-to-end:
+            </p>
+            <ul style="font-size:7.8pt;">
+                <li><strong>Corpus &amp; Preprocessing:</strong> Curated 3,520 balanced comments across 11 subcategories in Hindi and Bengali; built Unicode NFC, zero-width stripping, and emoji preservation pipeline.</li>
+                <li><strong>Model Training &amp; Ensembling:</strong> Designed dual-level 40,260-feature TF-IDF matrix; trained 4 classical classifiers; authored turnkey Google Colab GPU training notebook for MuRIL with expanded emoji vocabulary; implemented soft-voting and full hybrid ensembling.</li>
+                <li><strong>Evaluation &amp; Deployment:</strong> Conducted 6-cell cross-lingual zero-shot experiments and stress tests; developed interactive 7-model Gradio web application (<code>app.py</code>); authored technical reports.</li>
+            </ul>
+        </div>
+        <p style="font-size:7.8pt; margin: 2px 0;">
+            <strong>GitHub Repository Structure:</strong> Clean, modular directory organization strictly committed on branch <code>master</code>:
+            <br>
+            <code>d:
+lp\</code> &bull; <code>data/</code> (raw &amp; processed splits) &bull; <code>src/</code> (preprocessing, baselines, transformers, ensemble) &bull; <code>models/</code> (serialized vectorizers &amp; classifiers) &bull; <code>predictions/</code> &bull; <code>report/</code> (HTML reports, figures, JSON metrics) &bull; <code>app.py</code> (Gradio demo) &bull; <code>README.md</code>.
+        </p>
+
+        <!-- Section 6: Future Work -->
+        <h2><span class="badge">6</span> Future Work Before Final Evaluation (Round 3)</h2>
+        <ol style="font-size:7.8pt; margin-bottom:0;">
+            <li><strong>Step 7: Explainable AI (XAI):</strong> Implement LIME and Integrated Gradients to generate token-level visual heatmaps explaining why the model assigns a specific stance to given Indic words and emojis.</li>
+            <li><strong>Step 8: Final Academic Research Paper:</strong> Draft an 8-page ACL/IEEE-compliant publication detailing dataset creation, zero-shot transfer dynamics, and sarcasm mitigation in South Asian NLP.</li>
+            <li><strong>Code-Mixed Hinglish &amp; Banglish Expansion:</strong> Expand dataset to cover Romanized Hindi/Bengali social media text and test multilingual cross-script transfer.</li>
+        </ol>
+    </div>
+
+    <div class="page-footer">
+        <span>CSET 346 Natural Language Processing &bull; Round 2 Progress Report</span>
+        <span>Page 2 of 2 &bull; Results, Contributions &amp; Future Work</span>
+    </div>
+</div>
+
+</body>
+</html>

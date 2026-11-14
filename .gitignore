@@ -5,6 +5,7 @@ venv/
 .venv/
 *.pt
 *.bin
+*.safetensors
 *.pkl
 models/transformer_*/
 .DS_Store
