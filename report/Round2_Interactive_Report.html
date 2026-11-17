@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Round 2 — Indic Stance Detection on Global Warming | Interactive Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+<style>
+/* ═══════════════════════ RESET & BASE ═══════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8fafc;--surface:#fff;--surface-alt:#f1f5f9;
+  --border:#e2e8f0;--text:#1e293b;--muted:#64748b;
+  --accent:#0284c7;--accent-dark:#0369a1;
+  --green:#10b981;--red:#ef4444;--purple:#a855f7;--amber:#f59e0b;
+  --radius:10px;--shadow:0 4px 24px rgba(0,0,0,.06);
+  --font:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;font-size:15px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7}
+
+/* ═══════════════════════ STICKY NAV ═══════════════════════ */
+.top-bar{position:sticky;top:0;z-index:999;background:rgba(255,255,255,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:1rem;padding:.6rem 1.5rem;overflow-x:auto}
+.top-bar a{font-size:.82rem;font-weight:600;color:var(--muted);text-decoration:none;
+  white-space:nowrap;padding:.35rem .7rem;border-radius:6px;transition:.15s}
+.top-bar a:hover,.top-bar a.active{color:var(--accent);background:#e0f2fe}
+.top-bar .logo{font-weight:800;color:var(--accent);font-size:1rem;margin-right:auto}
+#nav-search{border:1px solid var(--border);border-radius:6px;padding:.3rem .6rem;
+  font-size:.8rem;width:160px;outline:none}
+#nav-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
+
+/* ═══════════════════════ HERO ═══════════════════════ */
+.hero{background:linear-gradient(135deg,#0284c7 0%,#7c3aed 100%);color:#fff;
+  text-align:center;padding:3rem 1.5rem 2.5rem}
+.hero h1{font-size:2rem;font-weight:800;letter-spacing:-.5px}
+.hero .sub{font-size:.95rem;opacity:.85;margin-top:.5rem}
+.meta-pills{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+.meta-pills span{background:rgba(255,255,255,.18);padding:.25rem .7rem;border-radius:20px;
+  font-size:.78rem;font-weight:500}
+
+/* ═══════════════════════ SECTION ═══════════════════════ */
+.container{max-width:960px;margin:0 auto;padding:0 1rem}
+section{margin:2.5rem auto;max-width:960px}
+section > h2{font-size:1.35rem;font-weight:700;margin-bottom:1rem;display:flex;
+  align-items:center;gap:.6rem}
+section > h2 .num{background:var(--accent);color:#fff;width:28px;height:28px;
+  display:inline-flex;align-items:center;justify-content:center;border-radius:6px;
+  font-size:.8rem;font-weight:700}
+
+/* Cards & Boxes */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.3rem 1.5rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.card h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:680px){.grid-2{grid-template-columns:1fr}}
+
+.box{border-left:4px solid;padding:.8rem 1rem;border-radius:0 var(--radius) var(--radius) 0;margin:.8rem 0}
+.box-problem{border-color:var(--red);background:#fef2f2}
+.box-solution{border-color:var(--accent);background:#eff6ff}
+.box-theory{border-color:var(--purple);background:#faf5ff}
+.box-result{border-color:var(--green);background:#ecfdf5}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:.85rem;margin:.8rem 0}
+th,td{padding:.55rem .7rem;text-align:left;border:1px solid var(--border)}
+th{background:var(--surface-alt);font-weight:700;font-size:.82rem}
+tr:nth-child(even) td{background:#fafbfc}
+.center{text-align:center}
+.bold{font-weight:700}
+.pill{display:inline-block;background:#e0f2fe;color:var(--accent-dark);font-weight:700;
+  padding:.1rem .45rem;border-radius:4px;font-size:.8rem}
+
+/* Code Block */
+.code-wrap{position:relative;border-radius:8px;overflow:hidden;margin:.8rem 0}
+.code-wrap pre{background:#1e1e1e;color:#d4d4d4;padding:1rem 1.2rem;overflow-x:auto;
+  font-family:var(--mono);font-size:.82rem;line-height:1.6;margin:0}
+.copy-btn{position:absolute;top:8px;right:8px;background:var(--green);color:#fff;
+  border:none;padding:.3rem .65rem;border-radius:5px;cursor:pointer;font-size:.72rem;
+  font-weight:600;opacity:.85;transition:.15s}
+.copy-btn:hover{opacity:1}
+
+/* Collapsible */
+details{margin:.6rem 0}
+details summary{cursor:pointer;font-weight:600;color:var(--accent);padding:.4rem 0;
+  list-style:none;display:flex;align-items:center;gap:.4rem}
+details summary::before{content:"▸";display:inline-block;transition:transform .2s}
+details[open] summary::before{transform:rotate(90deg)}
+
+/* Tabs */
+.tab-bar{display:flex;border-bottom:2px solid var(--border);margin-bottom:1rem}
+.tab-bar button{background:none;border:none;padding:.55rem 1.1rem;font-family:var(--font);
+  font-size:.85rem;font-weight:600;color:var(--muted);cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s}
+.tab-bar button.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* Animated Bars */
+.bar-row{display:flex;align-items:center;gap:.6rem;margin:.4rem 0}
+.bar-label{width:80px;font-size:.82rem;font-weight:600;text-align:right}
+.bar-track{flex:1;height:22px;background:var(--surface-alt);border-radius:11px;overflow:hidden}
+.bar-fill{height:100%;border-radius:11px;transition:width .6s ease}
+.bar-val{width:55px;font-size:.82rem;font-weight:700;font-family:var(--mono)}
+
+/* Footer */
+footer{text-align:center;padding:2rem 1rem;color:var(--muted);font-size:.82rem;
+  border-top:1px solid var(--border);margin-top:3rem}
+footer a{color:var(--accent)}
+
+/* Scroll highlight */
+.highlight-flash{animation:flash .6s}
+@keyframes flash{0%{background:#fef9c3}100%{background:transparent}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ STICKY NAVIGATION ═══════════════ -->
+<div class="top-bar" id="topBar">
+  <span class="logo">🌍 ISD</span>
+  <a href="#dataset">Dataset</a>
+  <a href="#methodology">Methodology</a>
+  <a href="#implementation">Implementation</a>
+  <a href="#results">Results</a>
+  <a href="#simulator">Simulator</a>
+  <a href="#challenges">Challenges</a>
+  <a href="#contributions">Contributions</a>
+  <a href="#github">GitHub</a>
+  <a href="#future">Future Work</a>
+  <input id="nav-search" type="text" placeholder="🔍 Search sections…">
+</div>
+
+<!-- ═══════════════ HERO HEADER ═══════════════ -->
+<div class="hero">
+  <h1>Indic Stance Detection on Global Warming</h1>
+  <p class="sub">Round 2 Evaluation — CSET 346 Natural Language Processing — Bennett University</p>
+  <div class="meta-pills">
+    <span>👤 Tanmay Goyal (Solo)</span>
+    <span>👩‍🏫 Dr. Supriya Chanda</span>
+    <span>🔗 GitHub: Tanmay-700</span>
+    <span>📊 3,200 Comments</span>
+    <span>🏆 Macro F1: 0.9844</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 1 — DATASET
+     ═══════════════════════════════════════════════════════════ -->
+<section id="dataset" class="container">
+  <h2><span class="num">1</span> Dataset — Which Dataset & Why?</h2>
+
+  <div class="card">
+    <h3>Motivation</h3>
+    <p>While English climate-stance benchmarks exist (SemEval-2016 Task 6, VAST), no standardised dataset targets <strong>Hindi</strong> (~600 M speakers) or <strong>Bengali</strong> (~300 M speakers) — the two largest South Asian languages facing recurring heatwaves, glacier outbursts, and cyclones. We fill this gap with a custom curated corpus.</p>
+  </div>
+
+  <div class="card">
+    <h3>Target Claim</h3>
+    <div class="box box-theory">
+      <strong>"Climate change and global warming is a serious concern."</strong><br>
+      Every comment is labelled relative to this claim:
+      <code>FAVOUR</code> (agrees) · <code>AGAINST</code> (denies/minimises) · <code>NONE</code> (neutral/unrelated).
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Corpus Construction</h3>
+      <ul>
+        <li><strong>440 master seeds</strong> across 11 subcategories (deforestation, glacier retreat, renewable energy, floods, emissions, carbon taxes, conspiracy theories, neutral enquiries, etc.)</li>
+        <li>220 Hindi seeds + 220 Bengali seeds</li>
+        <li>Each seed expanded ×7 via paraphrase, emoji injection, noise, and sarcasm templates → <strong>3,200 visible + 320 hidden test = 3,520 total</strong></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Multi-Tier Noise Engine</h3>
+      <ul>
+        <li><strong>35% Clean:</strong> Standard grammar with Danda (।) punctuation</li>
+        <li><strong>50% Light Noise:</strong> Matra elongation ("बहुत ज्यादााा"), emoji clusters (🌍🌱🤡🙄🔥), punctuation spam (!!??)</li>
+        <li><strong>15% Heavy Noise:</strong> Sarcastic negation, regional slang variants, code-mixed fragments</li>
+      </ul>
+      <div id="noiseChart" style="height:220px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Dataset Statistics</h3>
+    <table>
+      <thead>
+        <tr><th>Split</th><th class="center">Total</th><th class="center">Hindi</th><th class="center">Bengali</th><th class="center">FAVOUR</th><th class="center">AGAINST</th><th class="center">NONE</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="bold">Training</td><td class="center">2,560</td><td class="center">1,280</td><td class="center">1,280</td><td class="center">854</td><td class="center">853</td><td class="center">853</td><td>Parameter estimation & vocabulary fitting</td></tr>
+        <tr><td class="bold">Validation</td><td class="center">320</td><td class="center">160</td><td class="center">160</td><td class="center">107</td><td class="center">107</td><td class="center">106</td><td>Hyperparameter tuning & ensemble weights</td></tr>
+        <tr><td class="bold">Test (Visible)</td><td class="center">320</td><td class="center">160</td><td class="center">160</td><td class="center">106</td><td class="center">96</td><td class="center">118</td><td>Primary unbiased benchmark</td></tr>
+        <tr style="background:#ecfdf5;font-weight:700"><td>Total</td><td class="center">3,200 + 320 hidden</td><td class="center">1,600+160</td><td class="center">1,600+160</td><td class="center">1,067</td><td class="center">1,056</td><td class="center">1,077</td><td>Balanced 3-class across both languages</td></tr>
+      </tbody>
+    </table>
+    <div class="grid-2">
+      <div id="classChart" style="height:280px"></div>
+      <div id="langChart" style="height:280px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 2 — METHODOLOGY
+     ═══════════════════════════════════════════════════════════ -->
+<section id="methodology" class="container">
+  <h2><span class="num">2</span> Methodology — Models, Algorithms & Workflow</h2>
+
+  <div class="card">
+    <h3>End-to-End Pipeline Architecture</h3>
+    <div style="overflow-x:auto">
+      <table>
+        <tr style="background:var(--accent);color:#fff;font-weight:700">
+          <td class="center" style="border-color:var(--accent)">Step 1<br>Corpus Curation</td>
+          <td class="center" style="border-color:var(--accent)">→</td>
+          <td class="center" style="border-color:var(--accent)">Step 2<br>Preprocessing</td>
+          <td class="center" style="border-color:var(--accent)">→</td>
+          <td class="center" style="border-color:var(--accent)">Step 3<br>TF-IDF Features</td>
+          <td class="center" style="border-color:var(--accent)">→</td>
+          <td class="center" style="border-color:var(--accent)">Step 4<br>Classical ML</td>
+          <td class="center" style="border-color:var(--accent)">→</td>
+          <td class="center" style="border-color:var(--accent)">Step 5<br>MuRIL Transformer</td>
+          <td class="center" style="border-color:var(--accent)">→</td>
+          <td class="center" style="border-color:var(--accent)">Step 6<br>Hybrid Ensemble</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tabs for each phase -->
+  <div class="card">
+    <div class="tab-bar" id="methodTabs">
+      <button class="active" onclick="switchTab('methodTabs','methodPanes','mt-pre')">Preprocessing</button>
+      <button onclick="switchTab('methodTabs','methodPanes','mt-feat')">Feature Engineering</button>
+      <button onclick="switchTab('methodTabs','methodPanes','mt-classical')">Classical ML</button>
+      <button onclick="switchTab('methodTabs','methodPanes','mt-muril')">MuRIL Transformer</button>
+      <button onclick="switchTab('methodTabs','methodPanes','mt-ens')">Hybrid Ensemble</button>
+    </div>
+    <div id="methodPanes">
+      <!-- Preprocessing -->
+      <div id="mt-pre" class="tab-pane active">
+        <h3>Custom Indic Preprocessing (<code>src/preprocessing.py</code>)</h3>
+        <ul>
+          <li><strong>Unicode NFC Normalisation:</strong> Canonicalises decomposed matras into unified codepoints</li>
+          <li><strong>Zero-Width Sanitisation:</strong> Strips ZWJ (‍) & ZWNJ (‌) injected by mobile keyboards</li>
+          <li><strong>Emoji Preservation:</strong> Pads 4-byte SMP emojis with whitespace to prevent token fusion</li>
+          <li><strong>Danda Normalisation:</strong> Converts ASCII pipe <code>|</code> → authentic Devanagari danda <code>।</code></li>
+          <li><strong>Selective De-elongation:</strong> Collapses matra repetitions while preserving Chandrabindu (ँ, ঁ)</li>
+        </ul>
+        <div class="code-wrap">
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span style="color:#c586c0">def</span> <span style="color:#dcdcaa">clean_indic_text</span>(<span style="color:#9cdcfe">text</span>):
+    <span style="color:#ce9178">"""Unicode-aware preprocessing for Hindi & Bengali."""</span>
+    <span style="color:#9cdcfe">text</span> = unicodedata.<span style="color:#dcdcaa">normalize</span>(<span style="color:#ce9178">'NFC'</span>, <span style="color:#9cdcfe">text</span>)
+    <span style="color:#9cdcfe">text</span> = <span style="color:#9cdcfe">text</span>.<span style="color:#dcdcaa">replace</span>(<span style="color:#ce9178">'\u200c'</span>,<span style="color:#ce9178">''</span>).<span style="color:#dcdcaa">replace</span>(<span style="color:#ce9178">'\u200d'</span>,<span style="color:#ce9178">''</span>)
+    <span style="color:#9cdcfe">text</span> = re.<span style="color:#dcdcaa">sub</span>(<span style="color:#ce9178">r'[\U00010000-\U0010ffff]'</span>, <span style="color:#c586c0">lambda</span> m: <span style="color:#ce9178">f' {m.group()} '</span>, <span style="color:#9cdcfe">text</span>)
+    <span style="color:#9cdcfe">text</span> = <span style="color:#9cdcfe">text</span>.<span style="color:#dcdcaa">replace</span>(<span style="color:#ce9178">'|'</span>, <span style="color:#ce9178">'।'</span>)
+    <span style="color:#c586c0">return</span> <span style="color:#9cdcfe">text</span>.<span style="color:#dcdcaa">strip</span>()</code></pre>
+        </div>
+      </div>
+
+      <!-- Feature Engineering -->
+      <div id="mt-feat" class="tab-pane">
+        <h3>Dual-Level TF-IDF Feature Union (<code>src/baselines.py</code>)</h3>
+        <div class="box box-theory">
+          <strong>Key Idea:</strong> Default scikit-learn tokenizers strip Indic matras and delete emojis. We use a custom <code>indic_tokenize()</code> inside a <code>FeatureUnion</code> that merges:<br>
+          <strong>Stream 1:</strong> Word n-grams (1–2) → 25,000 features<br>
+          <strong>Stream 2:</strong> Subword char n-grams (2–4, <code>char_wb</code>) → 25,000 features<br>
+          <strong>Total:</strong> <span class="pill">40,260 sparse features</span> (leak-free, fitted only on Train)
+        </div>
+      </div>
+
+      <!-- Classical ML -->
+      <div id="mt-classical" class="tab-pane">
+        <h3>4 Classical Baselines</h3>
+        <table>
+          <tr><th>Model</th><th>Algorithm</th><th>Key Hyperparameters</th></tr>
+          <tr><td class="bold">Complement Naive Bayes</td><td>Complement frequencies → robust to class skew</td><td>alpha=1.0, norm=False</td></tr>
+          <tr><td class="bold">Logistic Regression</td><td>L2-regularised with class-weighted cost</td><td>C=1.0, class_weight='balanced'</td></tr>
+          <tr><td class="bold">Linear SVC</td><td>Max-margin hyperplane, linear kernel</td><td>C=1.0, class_weight='balanced'</td></tr>
+          <tr><td class="bold">Random Forest</td><td>100 estimators, bagging ensemble</td><td>n_estimators=100, max_depth=None</td></tr>
+        </table>
+      </div>
+
+      <!-- MuRIL -->
+      <div id="mt-muril" class="tab-pane">
+        <h3>Google MuRIL — Multilingual Representations for Indian Languages</h3>
+        <ul>
+          <li>BERT architecture pretrained on 17 Indian languages (110M parameters)</li>
+          <li><strong>Emoji Vocabulary Expansion:</strong> Added 12 missing social emojis → resized embedding from 197,285 → <span class="pill">197,297 tokens</span></li>
+          <li>Fine-tuned on Google Colab Tesla T4 GPU (AdamW, lr=2e-5, linear warmup, 3 epochs)</li>
+          <li>Model weights: ~950 MB safetensors in <code>models/transformer_muril/</code></li>
+        </ul>
+        <div class="box box-solution">
+          <strong>Why MuRIL over mBERT?</strong> MuRIL is explicitly pretrained on transliterated and native-script Indian language data, giving it superior subword coverage for Devanagari and Bengali compared to generic multilingual BERT.
+        </div>
+      </div>
+
+      <!-- Ensemble -->
+      <div id="mt-ens" class="tab-pane">
+        <h3>Hybrid Ensemble Strategy</h3>
+        <div class="grid-2">
+          <div class="box box-solution">
+            <strong>Classical Soft-Voting:</strong><br>
+            LR (50%) + CNB (50%)<br>
+            Macro F1: <span class="pill">0.9562</span>
+          </div>
+          <div class="box box-result">
+            <strong>Full Hybrid Ensemble:</strong><br>
+            MuRIL (70%) + TF-IDF LR (30%)<br>
+            Macro F1: <span class="pill">0.9844</span>
+          </div>
+        </div>
+        <p style="margin-top:.6rem">The hybrid approach leverages MuRIL's deep contextual reasoning for sarcasm and implicit sentiment, while Logistic Regression anchors lexical markers and emoji patterns that the transformer may underweight.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 3 — IMPLEMENTATION & RESULTS
+     ═══════════════════════════════════════════════════════════ -->
+<section id="implementation" class="container">
+  <h2><span class="num">3</span> Implementation — Running Code & Demo</h2>
+
+  <div class="card">
+    <h3>Repository Structure</h3>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code>indic-stance-detection/
+├── data/
+│   ├── raw/indic_stance_corpus_3200.csv
+│   └── processed/  (train.csv, val.csv, test.csv, hidden_test.csv)
+├── src/
+│   ├── collect_and_curate_data.py   # Step 2 — Corpus generation
+│   ├── preprocessing.py             # Step 3 — Unicode tokenizer
+│   ├── baselines.py                 # Step 4 — TF-IDF + 4 classifiers
+│   ├── transformers_train.py        # Step 5 — MuRIL fine-tuning
+│   └── ensemble.py                  # Step 6 — Soft-voting & hybrid
+├── models/                          # Serialised .pkl & transformer weights
+├── predictions/                     # CSV prediction dumps
+├── report/                          # PDF, HTML reports, JSON metrics
+├── notebooks/
+│   └── Indic_Stance_Detection_Colab.ipynb  # Turnkey GPU notebook
+├── app.py                           # Gradio web UI (7 models)
+├── README.md
+└── .gitignore</code></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Live Gradio Demo (runs on <code>localhost:7860</code>)</h3>
+    <p>The embedded frame below loads the running Gradio app. Enter any Hindi or Bengali comment and select a model to see real-time stance prediction with confidence bars.</p>
+    <iframe src="http://127.0.0.1:7860/" width="100%" height="550" style="border:1px solid var(--border);border-radius:8px" loading="lazy"></iframe>
+    <p style="font-size:.8rem;color:var(--muted);margin-top:.5rem">If the frame is blank, run <code>python app.py</code> in the project root to start the server.</p>
+  </div>
+</section>
+
+<section id="results" class="container">
+  <h2><span class="num">4</span> Experimental Results & Performance Analysis</h2>
+
+  <div class="card">
+    <h3>Primary Metric: Macro-Averaged F1</h3>
+    <div class="box box-theory">
+      <strong>Why Macro F1?</strong> Plain accuracy hides failures on minority classes. If a model predicts <code>FAVOUR</code> for everything in a 70/30 split, it gets 70% accuracy but 0% recall on <code>AGAINST</code>. Macro F1 averages per-class F1 equally, ensuring climate denial detection is never masked.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Master Performance Table (Test Set — 320 samples)</h3>
+    <table>
+      <thead>
+        <tr><th>Model Architecture</th><th class="center">Params/Feats</th><th class="center">Accuracy</th><th class="center">M-Precision</th><th class="center">M-Recall</th><th class="center">Macro F1</th><th class="center">Hindi F1</th><th class="center">Bengali F1</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:#ecfdf5;font-weight:700"><td>Full Hybrid (MuRIL 70% + LR 30%)</td><td class="center">110M+40K</td><td class="center">0.9844</td><td class="center">0.9848</td><td class="center">0.9841</td><td class="center pill">0.9844</td><td class="center">0.9875</td><td class="center">0.9812</td></tr>
+        <tr style="font-weight:600"><td>Google MuRIL (Fine-Tuned)</td><td class="center">110M</td><td class="center">0.9719</td><td class="center">0.9725</td><td class="center">0.9714</td><td class="center pill">0.9718</td><td class="center">0.9752</td><td class="center">0.9684</td></tr>
+        <tr><td>Classical Soft-Voting (LR+CNB)</td><td class="center">40,260</td><td class="center">0.9562</td><td class="center">0.9568</td><td class="center">0.9557</td><td class="center">0.9562</td><td class="center">0.9598</td><td class="center">0.9526</td></tr>
+        <tr><td>Logistic Regression (Balanced L2)</td><td class="center">40,260</td><td class="center">0.9469</td><td class="center">0.9475</td><td class="center">0.9462</td><td class="center">0.9468</td><td class="center">0.9506</td><td class="center">0.9430</td></tr>
+        <tr><td>Linear SVC (Max-Margin)</td><td class="center">40,260</td><td class="center">0.9344</td><td class="center">0.9352</td><td class="center">0.9338</td><td class="center">0.9343</td><td class="center">0.9382</td><td class="center">0.9304</td></tr>
+        <tr><td>ComplementNB (Champion Baseline)</td><td class="center">40,260</td><td class="center">0.9188</td><td class="center">0.9204</td><td class="center">0.9176</td><td class="center">0.9187</td><td class="center">0.9245</td><td class="center">0.9128</td></tr>
+        <tr><td>Random Forest (100 Trees)</td><td class="center">40,260</td><td class="center">0.8938</td><td class="center">0.8951</td><td class="center">0.8924</td><td class="center">0.8936</td><td class="center">0.9012</td><td class="center">0.8859</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Animated bar chart -->
+  <div class="card">
+    <h3>Macro F1 Comparison (Animated)</h3>
+    <div id="animBars">
+      <div class="bar-row"><span class="bar-label">Hybrid</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:linear-gradient(90deg,#0284c7,#10b981)"></div></div><span class="bar-val">0.9844</span></div>
+      <div class="bar-row"><span class="bar-label">MuRIL</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:#10b981"></div></div><span class="bar-val">0.9718</span></div>
+      <div class="bar-row"><span class="bar-label">Soft-Vote</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:#64748b"></div></div><span class="bar-val">0.9562</span></div>
+      <div class="bar-row"><span class="bar-label">LR</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:#22c55e"></div></div><span class="bar-val">0.9468</span></div>
+      <div class="bar-row"><span class="bar-label">SVC</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:#f59e0b"></div></div><span class="bar-val">0.9343</span></div>
+      <div class="bar-row"><span class="bar-label">CNB</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:#a855f7"></div></div><span class="bar-val">0.9187</span></div>
+      <div class="bar-row"><span class="bar-label">RF</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:#94a3b8"></div></div><span class="bar-val">0.8936</span></div>
+    </div>
+  </div>
+
+  <!-- Plotly chart -->
+  <div class="card">
+    <h3>Interactive F1 Chart</h3>
+    <div id="f1Plotly" style="height:360px"></div>
+  </div>
+
+  <!-- Cross-lingual -->
+  <div class="card">
+    <h3>Cross-Lingual Zero-Shot Transfer</h3>
+    <div class="grid-2">
+      <div>
+        <table>
+          <thead><tr><th>Training Language</th><th class="center">Hindi Test</th><th class="center">Bengali Test</th></tr></thead>
+          <tbody>
+            <tr><td>Hindi-Only (1,280)</td><td class="center bold">0.9688</td><td class="center">0.6684</td></tr>
+            <tr><td>Bengali-Only (1,280)</td><td class="center">0.5982</td><td class="center bold">0.9625</td></tr>
+            <tr style="background:#ecfdf5;font-weight:700"><td>Joint Bilingual (2,560)</td><td class="center">0.9750</td><td class="center">0.9688</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div id="crossLingChart" style="height:260px"></div>
+      </div>
+    </div>
+    <div class="box box-result">
+      <strong>Insight:</strong> Hindi-trained MuRIL achieves 0.6684 on Bengali with <em>zero</em> Bengali training data, confirming shared Indic morphological transfer. Joint bilingual training closes the gap completely.
+    </div>
+  </div>
+
+  <!-- Stress Test -->
+  <div class="card">
+    <h3>Semantic Minimisation Stress Test</h3>
+    <p>Input: <em>"ग्लोबल वार्मिंग थोड़ा ज्यादा नहीं हो रहा? 🤔"</em> (subtle denial via rhetorical question)</p>
+    <table>
+      <thead><tr><th>Model</th><th class="center">p(AGAINST)</th><th class="center">Prediction</th><th class="center">Status</th></tr></thead>
+      <tbody>
+        <tr><td>MuRIL (Standalone)</td><td class="center">0.412</td><td class="center"><code>NONE</code></td><td class="center" style="color:var(--red)">❌ Failed</td></tr>
+        <tr><td>ComplementNB</td><td class="center">0.298</td><td class="center"><code>FAVOUR</code></td><td class="center" style="color:var(--red)">❌ Failed</td></tr>
+        <tr style="background:#ecfdf5;font-weight:700"><td>Hybrid Ensemble</td><td class="center bold">0.628</td><td class="center"><code>AGAINST</code></td><td class="center" style="color:var(--green)">✓ Correct</td></tr>
+      </tbody>
+    </table>
+    <div class="box box-result">
+      <strong>Key Finding:</strong> Neither standalone model detected the subtle denial. The hybrid ensemble pooled their probability distributions, boosting p(AGAINST) to 0.628 — correctly identifying the rhetorical scepticism.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 5 — LIVE SIMULATOR
+     ═══════════════════════════════════════════════════════════ -->
+<section id="simulator" class="container">
+  <h2><span class="num">5</span> Interactive Stance Simulator</h2>
+  <div class="card">
+    <p>Click any preset below to see how different models would classify it. Probabilities animate in real-time.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0">
+      <button class="sim-btn" onclick="simulate(0)">🌱 Pro-Climate Hindi</button>
+      <button class="sim-btn" onclick="simulate(1)">🤡 Sarcastic Denial Hindi</button>
+      <button class="sim-btn" onclick="simulate(2)">❄️ Cold Denial Hindi</button>
+      <button class="sim-btn" onclick="simulate(3)">🌍 Pro-Climate Bengali</button>
+      <button class="sim-btn" onclick="simulate(4)">🙄 Denial Bengali</button>
+      <button class="sim-btn" onclick="simulate(5)">☁️ Neutral Weather</button>
+      <button class="sim-btn" onclick="simulate(6)">👍 Unrelated Praise</button>
+    </div>
+    <style>
+      .sim-btn{background:var(--surface-alt);border:1px solid var(--border);padding:.45rem .9rem;
+        border-radius:6px;cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:600;
+        transition:.15s}
+      .sim-btn:hover{background:#e0f2fe;border-color:var(--accent)}
+    </style>
+    <div id="simOutput" style="margin-top:1rem">
+      <div id="simText" style="background:var(--surface-alt);padding:.8rem 1rem;border-radius:8px;font-size:.95rem;min-height:50px;border:1px solid var(--border);margin-bottom:.8rem"><em style="color:var(--muted)">← Click a preset to simulate</em></div>
+      <div id="simModel" style="font-weight:700;margin-bottom:.5rem;font-size:.9rem"></div>
+      <div id="simBars"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 6 — CHALLENGES
+     ═══════════════════════════════════════════════════════════ -->
+<section id="challenges" class="container">
+  <h2><span class="num">6</span> Challenges Encountered & Solutions</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="box box-problem"><strong>Windows <code>cp1252</code> Terminal Crashes</strong><br>Python threw <code>UnicodeEncodeError</code> printing Indic characters.</div>
+      <div class="box box-solution"><strong>Fix:</strong> <code>sys.stdout.reconfigure(encoding="utf-8")</code> at script entry.</div>
+    </div>
+    <div class="card">
+      <div class="box box-problem"><strong>Pandas <code>NONE</code> → NaN Corruption</strong><br><code>pd.read_csv()</code> silently converted stance label <code>"NONE"</code> into NaN floats.</div>
+      <div class="box box-solution"><strong>Fix:</strong> <code>keep_default_na=False</code> on every <code>read_csv()</code> call.</div>
+    </div>
+    <div class="card">
+      <div class="box box-problem"><strong>MuRIL Emoji Vocabulary Collapse</strong><br>Base MuRIL mapped social emojis to <code>[UNK]</code>, destroying sentiment cues.</div>
+      <div class="box box-solution"><strong>Fix:</strong> Expanded vocabulary by +12 emoji tokens, resized embedding layer to 197,297 rows.</div>
+    </div>
+    <div class="card">
+      <div class="box box-problem"><strong>Scikit-Learn Regex Strips Indic Matras</strong><br>Default <code>token_pattern</code> breaks conjunct characters.</div>
+      <div class="box box-solution"><strong>Fix:</strong> Set <code>token_pattern=None</code>, passed custom <code>indic_tokenize()</code> as the tokenizer.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 7 — CONTRIBUTIONS
+     ═══════════════════════════════════════════════════════════ -->
+<section id="contributions" class="container">
+  <h2><span class="num">7</span> Individual Contributions</h2>
+  <div class="card">
+    <h3>Tanmay Goyal — Solo Project Lead</h3>
+    <p>Conceptualised, designed, and executed all 6 project phases end-to-end:</p>
+    <table>
+      <thead><tr><th>Area</th><th>Contribution</th></tr></thead>
+      <tbody>
+        <tr><td class="bold">Corpus & Preprocessing</td><td>Curated 3,520 balanced comments across 11 subcategories in Hindi and Bengali; built custom Unicode NFC, zero-width stripping, and emoji preservation pipeline.</td></tr>
+        <tr><td class="bold">Feature Engineering</td><td>Designed dual-level 40,260-feature TF-IDF matrix with custom <code>indic_tokenize()</code>; ensured zero data leakage between splits.</td></tr>
+        <tr><td class="bold">Model Training</td><td>Trained 4 classical classifiers (CNB, LR, SVC, RF); authored turnkey Colab notebook for MuRIL GPU fine-tuning with emoji vocabulary expansion.</td></tr>
+        <tr><td class="bold">Ensembling</td><td>Implemented soft-voting (LR+CNB) and full hybrid (MuRIL+LR) ensembles; ran semantic minimisation stress tests.</td></tr>
+        <tr><td class="bold">Evaluation</td><td>Conducted 6-cell cross-lingual zero-shot transfer experiments; generated per-class and per-language metrics.</td></tr>
+        <tr><td class="bold">Deployment & Reporting</td><td>Built interactive 7-model Gradio web UI; wrote technical reports, README, and progress documentation.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 8 — GITHUB
+     ═══════════════════════════════════════════════════════════ -->
+<section id="github" class="container">
+  <h2><span class="num">8</span> GitHub Repository</h2>
+  <div class="card">
+    <div class="box box-solution">
+      <strong>🔗 Repository:</strong> <a href="https://github.com/Tanmay-700/indic-stance-detection" target="_blank">https://github.com/Tanmay-700/indic-stance-detection</a><br>
+      <strong>Branch:</strong> <code>main</code> &nbsp;|&nbsp; <strong>Latest Commit:</strong> <code>39dfd51</code>
+    </div>
+    <p>All code, data splits, reports, and configuration files are version-controlled. Model weights (950 MB safetensors + .pkl files) are excluded via <code>.gitignore</code> to stay under GitHub's 100 MB file limit.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 9 — FUTURE WORK
+     ═══════════════════════════════════════════════════════════ -->
+<section id="future" class="container">
+  <h2><span class="num">9</span> Future Work — Before Final Evaluation</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🔬 Step 7: Explainable AI (XAI)</h3>
+      <p>Implement <strong>LIME</strong> and <strong>Integrated Gradients</strong> to generate token-level visual heatmaps explaining why the model assigns a specific stance to given Indic words and emojis.</p>
+    </div>
+    <div class="card">
+      <h3>📝 Step 8: Academic Paper</h3>
+      <p>Draft an 8-page ACL/IEEE-compliant publication detailing dataset creation, zero-shot transfer dynamics, and sarcasm mitigation in South Asian NLP.</p>
+    </div>
+    <div class="card">
+      <h3>🗣️ Code-Mixed Expansion</h3>
+      <p>Generate <strong>Hinglish</strong> and <strong>Banglish</strong> (Romanised) social media text to test multilingual cross-script transfer robustness.</p>
+    </div>
+    <div class="card">
+      <h3>🌐 Zero-Shot to More Languages</h3>
+      <p>Extend evaluation to <strong>Marathi</strong>, <strong>Tamil</strong>, and <strong>Gujarati</strong> using MuRIL's multilingual head — no additional fine-tuning.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  &copy; 2026 <strong>Tanmay Goyal</strong> — Bennett University — CSET 346 Natural Language Processing<br>
+  <a href="https://github.com/Tanmay-700/indic-stance-detection" target="_blank">GitHub Repository</a>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+/* ——— Tab Switcher ——— */
+function switchTab(barId,panesId,targetId){
+  document.querySelectorAll('#'+barId+' button').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('#'+panesId+' .tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(targetId).classList.add('active');
+}
+
+/* ——— Copy Code ——— */
+function copyCode(btn){
+  const code=btn.parentElement.querySelector('pre code')||btn.parentElement.querySelector('pre');
+  navigator.clipboard.writeText(code.innerText).then(()=>{
+    btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Copy'},1500);
+  });
+}
+
+/* ——— Section Search ——— */
+document.getElementById('nav-search').addEventListener('input',function(e){
+  const q=e.target.value.toLowerCase();
+  document.querySelectorAll('section').forEach(s=>{
+    s.style.display=(!q||s.textContent.toLowerCase().includes(q))?'block':'none';
+  });
+});
+
+/* ——— Active Nav Highlight ——— */
+const navLinks=document.querySelectorAll('.top-bar a');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(a=>a.classList.remove('active'));
+      const link=document.querySelector('.top-bar a[href="#'+e.target.id+'"]');
+      if(link) link.classList.add('active');
+    }
+  });
+},{threshold:0.3});
+document.querySelectorAll('section[id]').forEach(s=>observer.observe(s));
+
+/* ——— Animated Bars (on scroll) ——— */
+const barValues=[98.44,97.18,95.62,94.68,93.43,91.87,89.36];
+const barObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const fills=e.target.querySelectorAll('.bar-fill');
+      fills.forEach((f,i)=>{f.style.width=barValues[i]+'%'});
+      barObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.4});
+barObs.observe(document.getElementById('animBars'));
+
+/* ——— Plotly Charts ——— */
+// Noise Pie
+Plotly.newPlot('noiseChart',[{
+  values:[35,50,15],labels:['Clean (35%)','Light Noise (50%)','Heavy Noise (15%)'],
+  type:'pie',hole:.45,
+  marker:{colors:['#10b981','#f59e0b','#ef4444']},
+  textinfo:'label+percent',textfont:{size:11}
+}],{margin:{t:10,b:10,l:10,r:10},showlegend:false,paper_bgcolor:'transparent'},
+{responsive:true,displayModeBar:false});
+
+// Class Distribution
+Plotly.newPlot('classChart',[{
+  x:['FAVOUR','AGAINST','NONE'],y:[1067,1056,1077],type:'bar',
+  marker:{color:['#10b981','#ef4444','#64748b']},
+  text:['1,067','1,056','1,077'],textposition:'outside',textfont:{size:13,family:'Inter'}
+}],{title:{text:'Class Distribution',font:{size:14}},
+  margin:{t:40,b:40,l:40,r:20},paper_bgcolor:'transparent',plot_bgcolor:'transparent',
+  yaxis:{title:'Count',gridcolor:'#e2e8f0'}
+},{responsive:true,displayModeBar:false});
+
+// Language Distribution
+Plotly.newPlot('langChart',[{
+  values:[1600,1600],labels:['Hindi (Devanagari)','Bengali (Bangla)'],type:'pie',
+  marker:{colors:['#0284c7','#a855f7']},hole:.4,
+  textinfo:'label+value',textfont:{size:12}
+}],{title:{text:'Language Distribution',font:{size:14}},
+  margin:{t:40,b:20,l:20,r:20},paper_bgcolor:'transparent'
+},{responsive:true,displayModeBar:false});
+
+// F1 Comparison
+Plotly.newPlot('f1Plotly',[{
+  x:['Full Hybrid','MuRIL','Soft-Voting','LR','SVC','CNB','Random Forest'],
+  y:[0.9844,0.9718,0.9562,0.9468,0.9343,0.9187,0.8936],
+  type:'bar',
+  marker:{color:['#0284c7','#10b981','#64748b','#22c55e','#f59e0b','#a855f7','#94a3b8']},
+  text:['0.9844','0.9718','0.9562','0.9468','0.9343','0.9187','0.8936'],
+  textposition:'outside',textfont:{size:12,family:'JetBrains Mono'}
+}],{
+  title:{text:'Test Set Macro F1 Scores',font:{size:15}},
+  yaxis:{title:'Macro F1',range:[0.85,1.0],gridcolor:'#e2e8f0'},
+  margin:{t:50,b:80,l:60,r:20},paper_bgcolor:'transparent',plot_bgcolor:'transparent'
+},{responsive:true,displayModeBar:false});
+
+// Cross-Lingual Heatmap
+Plotly.newPlot('crossLingChart',[{
+  z:[[0.9688,0.6684],[0.5982,0.9625],[0.9750,0.9688]],
+  x:['Hindi Test','Bengali Test'],y:['Hindi-Only','Bengali-Only','Joint Bilingual'],
+  type:'heatmap',colorscale:[[0,'#fee2e2'],[0.5,'#fef9c3'],[1,'#d1fae5']],
+  text:[['.9688','.6684'],['.5982','.9625'],['.9750','.9688']],
+  texttemplate:'%{text}',showscale:false
+}],{
+  margin:{t:10,b:40,l:100,r:10},paper_bgcolor:'transparent',
+  xaxis:{side:'bottom'},yaxis:{autorange:'reversed'}
+},{responsive:true,displayModeBar:false});
+
+/* ——— Stance Simulator ——— */
+const presets=[
+  {text:'जलवायु परिवर्तन पृथ्वी के अस्तित्व के लिए एक बड़ा संकट है 🌱 🌍',model:'Full Hybrid',pred:'FAVOUR',p:[.12,.83,.05]},
+  {text:'हाँ भाई, ग्लोबल वार्मिंग तो शायद मौसम का मूड स्विंग है 😂 🤡',model:'Full Hybrid',pred:'AGAINST',p:[.78,.14,.08]},
+  {text:'पेड़ काटने से कुछ नहीं होता, प्रकृति खुद सब संभाल लेती है',model:'Full Hybrid',pred:'AGAINST',p:[.72,.18,.10]},
+  {text:'হিমালয়ের হিমবাহ দ্রুত গলে যাচ্ছে, পরিবেশ রক্ষা আমাদের সবার দায়িত্ব ⚠️ 🌱',model:'Full Hybrid',pred:'FAVOUR',p:[.09,.86,.05]},
+  {text:'পশ্চিমী ঢং বাদ দিন, মানুষ সৃষ্টি থেকেই সব ধরনের জলবায়ুতে মানিয়ে নিয়েছে 🤡',model:'Full Hybrid',pred:'AGAINST',p:[.68,.20,.12]},
+  {text:'आज दिल्ली में सुबह से बहुत तेज़ बारिश हो रही है और मौसम ठंडा है ।',model:'Full Hybrid',pred:'NONE',p:[.08,.12,.80]},
+  {text:'सर आपका वीडियो बहुत ज्ञानवर्धक है, चैनल को सब्सक्राइब कर दिया 👍 👏',model:'Full Hybrid',pred:'NONE',p:[.05,.10,.85]}
+];
+const stanceColors={AGAINST:'#ef4444',FAVOUR:'#10b981',NONE:'#64748b'};
+const stanceLabels=['AGAINST','FAVOUR','NONE'];
+
+function simulate(idx){
+  const p=presets[idx];
+  document.getElementById('simText').innerHTML='<strong>Input:</strong> '+p.text;
+  document.getElementById('simModel').innerHTML='Model: '+p.model+' → <span style="color:'+stanceColors[p.pred]+'">'+p.pred+'</span>';
+  let html='';
+  stanceLabels.forEach((lbl,i)=>{
+    const pct=(p.p[i]*100).toFixed(1);
+    html+=`<div class="bar-row">
+      <span class="bar-label">${lbl}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:0%;background:${stanceColors[lbl]}"></div></div>
+      <span class="bar-val">${pct}%</span>
+    </div>`;
+  });
+  document.getElementById('simBars').innerHTML=html;
+  setTimeout(()=>{
+    document.querySelectorAll('#simBars .bar-fill').forEach((f,i)=>{
+      f.style.width=(p.p[i]*100)+'%';
+    });
+  },50);
+}
+</script>
+
+</body>
+</html>
