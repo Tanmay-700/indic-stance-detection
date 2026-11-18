@@ -157,18 +157,6 @@ Open your browser at `http://127.0.0.1:7860/` to test live stance classification
 
 ---
 
-## 👤 Individual Contributions
-
-**Tanmay Goyal (Solo Project Lead):**
-- **Corpus Engineering:** Curated 3,520 balanced comments across 11 subcategories in Hindi and Bengali with calibrated noise injection.
-- **Preprocessing Pipeline:** Authored Unicode NFC normalization, zero-width joiner removal, and custom emoji-preserving regex tokenizers.
-- **Feature & Classical Modeling:** Constructed leak-free 40,260-feature dual TF-IDF matrix; trained and evaluated 4 classical algorithms (CNB, LR, LinearSVC, RF).
-- **Transformer Engineering:** Designed vocabulary expansion (+12 tokens) and embedding resizing for Google MuRIL; authored turnkey Google Colab GPU training notebook.
-- **Ensembling & Cross-Lingual Evaluation:** Formulated soft-voting and full hybrid probability aggregation; executed 6-cell cross-lingual zero-shot evaluation; resolved adversarial semantic minimization.
-- **Web Interface & Documentation:** Built interactive 7-model Gradio application (`app.py`); compiled 2-page progress report and complete technical reports.
-
----
-
 ## 🔮 Future Work Before Final Evaluation (Round 3)
 
 1. **Step 7 — Explainable AI (XAI):** Integrate LIME and Integrated Gradients for token-level visual heatmaps explaining feature importance for Indic stance decisions.

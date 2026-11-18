@@ -777,7 +777,7 @@ body.dark-mode .ieee-table tr.highlight-champion td {
     <a href="#sec-crosslingual" class="nav-link">IV. Cross-Lingual</a>
     <a href="#sec-simulator" class="nav-link">V. Interactive Simulator</a>
     <a href="#sec-challenges" class="nav-link">VI. Challenges</a>
-    <a href="#sec-contributions" class="nav-link">VII. Contributions</a>
+    <a href="#sec-repository" class="nav-link">VII. Repository</a>
     <a href="#sec-future" class="nav-link">VIII. Roadmap</a>
   </nav>
 
@@ -1371,24 +1371,12 @@ def clean_indic_text(text: str) -> str:
         </div>
       </section>
 
-      <!-- SECTION VII: CONTRIBUTIONS & REPOSITORY -->
-      <section class="section-anchor" id="sec-contributions">
+      <!-- SECTION VII: REPOSITORY ARCHITECTURE -->
+      <section class="section-anchor" id="sec-repository">
         <h2 class="ieee-heading-1">
-          <span>VII. Individual Contributions & GitHub Organization</span>
+          <span>VII. GitHub Repository Organization & Reproducibility</span>
           <span class="heading-badge">Project Verification</span>
         </h2>
-
-        <div class="clean-card" style="margin-bottom:20px;">
-          <h3 style="font-size:15px; font-weight:700; margin-bottom:8px;">Tanmay Goyal (Solo Contributor & Project Lead)</h3>
-          <p style="margin-bottom:12px;">Tanmay Goyal independently conceived, engineered, evaluated, and documented all phases of the project:</p>
-          <ul>
-            <li><strong>Dataset Curation:</strong> Authored 440 master seeds across 11 subcategories and generated 3,520 balanced samples using the 3-tier noise engine.</li>
-            <li><strong>Linguistic Preprocessing:</strong> Built <code>clean_indic_text</code> and <code>indic_tokenize</code> for Unicode NFC normalization, zero-width stripping, and emoji preservation.</li>
-            <li><strong>Classical & Transformer Baselines:</strong> Trained 4 scikit-learn baseline classifiers, fine-tuned Google MuRIL on GPU with emoji vocab expansion, and designed the soft-voting hybrid ensemble.</li>
-            <li><strong>Cross-Lingual & Stress Testing:</strong> Executed the zero-shot transfer evaluation matrix and semantic minimization diagnostics.</li>
-            <li><strong>Deployment & Documentation:</strong> Built the 7-model Gradio web application, IEEE-formatted reports, and turnkey Colab notebooks.</li>
-          </ul>
-        </div>
 
         <div class="clean-card-subtle">
           <strong>GitHub Repository Architecture:</strong> <code>https://github.com/Tanmay-700/indic-stance-detection</code> (Branch: <code>main</code>)
