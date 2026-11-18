@@ -94,10 +94,9 @@ d:\nlp\
 │   ├── baseline_predictions.csv                   # Test set predictions for 4 baselines
 │   └── ensemble_predictions.csv                   # Test set predictions for ensembles
 ├── report/
-│   ├── Round2_Progress_Report.pdf                 # Formal Two-Page Progress Report (Mandatory)
-│   ├── Round2_Progress_Report.html                # Printable 2-page HTML source
-│   ├── Step_by_Step_Technical_Report.html         # Full 8-section technical reference manual
-│   ├── detsils.html                               # Mirror technical documentation
+│   ├── Round2_Interactive_Report.html         # Main IEEE-Style Interactive Technical Report & Simulator
+│   ├── Round2_Progress_Report.pdf             # Formal Two-Page Progress Report (Mandatory)
+│   ├── Round2_Progress_Report.html            # Printable 2-page HTML source
 │   ├── baseline_results.json                      # Machine-readable baseline metrics
 │   ├── ensemble_results.json                      # Machine-readable ensemble metrics
 │   ├── cross_lingual_results.json                 # 6-cell cross-lingual transfer matrix
